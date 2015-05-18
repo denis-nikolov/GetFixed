@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="GetFixed/src"/>
+	<classpathentry kind="lib" path="GetFixed/jarFiles/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="GetFixed/jarFiles/sqljdbc4.jar"/>
+	<classpathentry kind="lib" path="GetFixed/jarFiles/swing-layout-1.0.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="GetFixed/bin"/>
+</classpath>

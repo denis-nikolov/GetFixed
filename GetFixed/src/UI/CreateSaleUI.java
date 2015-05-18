@@ -32,7 +32,7 @@ import Control.CtrSupplier;
 import Model.Product;
 import Model.Sale;
 import Model.Service;
-import UI.GetFixed.Table;
+import UI.MainUI.Table;
 
 public class CreateSaleUI {
 	private JTable table;
