@@ -98,16 +98,285 @@ public class GetFixed extends JFrame {
 		btnSales.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				secondaryMenuPanel.removeAll();
-				contentPanel.removeAll();
 
 				JButton btnMakeASale = new JButton("Create sale");
 				secondaryMenuPanel.add(btnMakeASale);
 				btnMakeASale.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						contentPanel.removeAll();
-						CreateSaleUI createSaleUi = new CreateSaleUI(
-								contentPanel, secondaryMenuPanel);
-						createSaleUi.make();
+
+						table = new JTable();
+
+						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+						table.setModel(new DefaultTableModel(new Object[][] { {
+								null, null, null, null, null, } },
+								new String[] { "Barcode", "Name", "Price/pc",
+										"Quantity", "Total" }) {
+							Class[] columnTypes = new Class[] { Integer.class,
+									String.class, Double.class, Integer.class,
+									Double.class };
+
+							public Class getColumnClass(int columnIndex) {
+								return columnTypes[columnIndex];
+							}
+
+							boolean[] canEdit = new boolean[] { true, false,
+									false, true, false };
+
+							public boolean isCellEditable(int rowIndex,
+									int columnIndex) {
+								return canEdit[columnIndex];
+							}
+						});
+
+						table.setBounds(10, 27, 588, 195);
+						JScrollPane scrollPane = new JScrollPane(table);
+						scrollPane.setBounds(10, 52, 818, 300);
+						table.setFillsViewportHeight(true);
+						contentPanel.add(scrollPane);
+						DefaultTableModel model = (DefaultTableModel) table
+								.getModel();
+
+						JButton btnAdd = new JButton("Add");
+						btnAdd.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent arg0) {
+								model.addRow(new Object[] { null, null, null,
+										null, null });
+							}
+						});
+						btnAdd.setBounds(625, 11, 89, 23);
+						contentPanel.add(btnAdd);
+
+						JLabel lblTotalPrice = new JLabel("Total price:");
+						lblTotalPrice.setHorizontalAlignment(SwingConstants.TRAILING);
+						lblTotalPrice.setBounds(556, 355, 72, 23);
+						contentPanel.add(lblTotalPrice);
+
+						JTextField textFieldPrice = new JTextField();
+						textFieldPrice.setBounds(638, 355, 86, 23);
+						textFieldPrice.setEditable(false);
+						contentPanel.add(textFieldPrice);
+						textFieldPrice.setText("0.0");
+
+						JLabel lblCustomerId = new JLabel("Customer ID:");
+						lblCustomerId.setBounds(15, 11, 111, 14);
+						contentPanel.add(lblCustomerId);
+
+						JTextField textFieldCustomer = new JTextField();
+						textFieldCustomer.setBounds(101, 8, 102, 20);
+						textFieldCustomer.addFocusListener(new FocusListener() {
+
+							@Override
+							public void focusGained(FocusEvent e) {
+								if (e.getSource() == textFieldCustomer) {
+									textFieldCustomer.selectAll();
+								}
+							}
+
+							@Override
+							public void focusLost(FocusEvent e) {
+								if (e.getSource() == textFieldCustomer) {
+									String id = textFieldCustomer.getText();
+									if (customerCtr.findById(Integer.parseInt(id)) == null) {
+										JOptionPane.showMessageDialog(null,
+												"There is no customer with ID "+ id + " !", "ID Error",
+												JOptionPane.ERROR_MESSAGE);
+										textFieldCustomer.setText("0");
+									}
+								}
+							}
+						});
+						contentPanel.add(textFieldCustomer);
+						textFieldCustomer.setColumns(10);
+
+						JButton btnRemove = new JButton("Remove");
+						btnRemove.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								int[] rows = table.getSelectedRows();
+								for (int i = 0; i < rows.length; i++) {
+									if (table.getValueAt(table.getSelectedRow(), 4) != null) {
+
+										double total = Double.parseDouble(textFieldPrice.getText());
+
+										double sum = Double.parseDouble(table.getValueAt(table.getSelectedRow(),4).toString());
+                                        int customerId = Integer.parseInt(textFieldCustomer.getText());
+										double discount = saleCtr.calculateDiscount(customerId, sum);
+
+										total -= saleCtr.calculateTotalPrice(sum, discount);
+										textFieldPrice.setText(Double.toString(total));
+									}
+									model.removeRow(rows[i] - i);
+								}
+							}
+						});
+						btnRemove.setBounds(720, 11, 105, 23);
+						contentPanel.add(btnRemove);
+
+						JRadioButton rdbtnNotAMember = new JRadioButton("Not a member");
+						rdbtnNotAMember.setBounds(225, 7, 109, 23);
+						contentPanel.add(rdbtnNotAMember);
+						rdbtnNotAMember.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+
+								if (textFieldCustomer.isEditable()) {
+									textFieldCustomer.setText("0");
+									textFieldCustomer.setEditable(false);
+
+								} else {
+									textFieldCustomer.setEditable(true);
+									textFieldCustomer.setText("");
+								}
+							}
+						});
+
+						table.getModel().addTableModelListener(
+								new TableModelListener() {
+									Product product = new Product();
+									Service service = new Service();
+
+									public void tableChanged(TableModelEvent e) {
+
+										if (e.getType() == (TableModelEvent.UPDATE)) {
+											int intColumn = e.getColumn();
+											int intRows = e.getFirstRow();
+											updateData(intRows, intColumn);
+										}
+									}
+
+									private void updateData(int intRows, int intColumn) {
+
+										if (intColumn == 0) {
+											String text = textFieldCustomer.getText();
+											if (text.length() == 0 || text == null) {
+												JOptionPane.showMessageDialog(null,"You have not entered a customer!",
+																"Customer Error",
+																JOptionPane.ERROR_MESSAGE);
+											}
+											int barcode = Integer.parseInt(table.getValueAt(intRows, 0).toString());
+
+											if (functionalityCtr.isProduct(barcode)) {
+												product = productCtr.findByBarcode(barcode);
+												if (productCtr.isAvailable(barcode)) {
+													model.setValueAt(product.getName(),intRows, 1);
+													model.setValueAt(product.getSellingPrice(),intRows, 2);
+												} else {
+													JOptionPane.showMessageDialog(null,"No product with that barcode!",
+																	"Barcode error!",
+																	JOptionPane.ERROR_MESSAGE);
+												}
+											} else {
+												service = serviceCtr.findByBarcode(barcode);
+												if (serviceCtr.isAvailable(barcode)) {
+													model.setValueAt(service.getName(),intRows, 1);
+													model.setValueAt(service.getPrice(),intRows, 2);
+												} else {
+													JOptionPane.showMessageDialog(null,"No service with that barcode!",
+																	"Barcode error!",
+																	JOptionPane.ERROR_MESSAGE);
+												}
+											}
+										}
+										if (intColumn == 3) {
+											int amount = Integer.parseInt(table.getValueAt(intRows, 3).toString());
+											if (functionalityCtr.isProduct()) {
+												if (productCtr.isAmountAvailable(amount, product)) {
+													if (productCtr.isDiscount(amount, product)) {
+														model.setValueAt(product.getPriceForDiscount(),intRows, 2);
+													} else {
+														model.setValueAt(product.getSellingPrice(),intRows, 2);
+													}
+												} else {
+													product = productCtr.findByBarcode(Integer.parseInt(table.getValueAt(intRows,0).toString()));
+													JOptionPane.showMessageDialog(null,
+																	"The typed amount is not available! \n You have "
+													                 + product.getAmount()+ " from "+ product.getName()+ "!",
+																	"Amount error!",
+																	JOptionPane.ERROR_MESSAGE);
+													table.setValueAt(0,intRows, 3);
+												}
+											}
+										    double pricePerPiece = Double.parseDouble(table.getValueAt(intRows, 2).toString());
+											double price = saleCtr.calculatePrice(pricePerPiece, amount);
+											model.setValueAt(price, intRows, 4);
+
+											double subtotal = 0;
+											for (int rows = 0; rows < table.getRowCount(); rows++) {
+												double pricee = Double.parseDouble(model.getValueAt(rows, 4).toString());
+												subtotal += pricee;
+											}
+
+											int customerId = Integer.parseInt(textFieldCustomer.getText());
+											double discount = saleCtr.calculateDiscount(customerId,subtotal);
+
+											double total = saleCtr.calculateTotalPrice(subtotal, discount);
+											textFieldPrice.setText(Double.toString(total));
+										}
+									}
+								});
+
+						JButton btnSubmit = new JButton("Submit");
+						btnSubmit.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								int saleId = 0;
+								try {
+									if (textFieldCustomer.getText().equals("")) {
+										JOptionPane
+												.showMessageDialog(
+														null,
+														"You have not entered a customer!",
+														"Customer error!",
+														JOptionPane.ERROR_MESSAGE);
+									} else {
+										saleId = saleCtr.insertSale(
+												Integer.parseInt(textFieldCustomer
+														.getText().toString()),
+												Double.parseDouble(textFieldPrice
+														.getText().toString()));
+										// ic.insertInvoice(saleId);
+									}
+
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+
+								table.selectAll();
+								int[] vals = table.getSelectedRows();
+								for (int i = 0; i < vals.length; i++) {
+									for (int x = 0; x < table.getColumnCount(); x++) {
+										functionalityCtr.addValue(table
+												.getValueAt(i, x).toString());
+									}
+
+									try {
+										ArrayList<String> values = functionalityCtr
+												.getValues();
+										saleCtr.insertPartSale(
+												saleId,
+												Integer.parseInt(values.get(0)),
+												values.get(1),
+												Double.parseDouble(values
+														.get(2)),
+												Integer.parseInt(values.get(3)),
+												Double.parseDouble(values
+														.get(4)));
+
+									} catch (Exception e1) {
+										e1.printStackTrace();
+									}
+									functionalityCtr.removeAllValues();
+								}
+
+							}
+						});
+						btnSubmit.setBounds(738, 355, 89, 23);
+						contentPanel.add(btnSubmit);
+
+						invalidate();
+						revalidate();
+						repaint();
+						setVisible(true);
+
 					}
 				});
 
@@ -115,13 +384,155 @@ public class GetFixed extends JFrame {
 				secondaryMenuPanel.add(btnShowSale);
 				btnShowSale.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+
 						contentPanel.removeAll();
-						ShowSaleUI showSaleUi = new ShowSaleUI(contentPanel,
-								secondaryMenuPanel, btnShowSale);
-						showSaleUi.make();
+
+						table = new JTable();
+						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+						table.setModel(new DefaultTableModel(new Object[][] { {
+								null, null, null, null } }, new String[] {
+								"ID", "Date", "Customer", "Price" }) {
+							Class[] columnTypes = new Class[] { Integer.class,
+									String.class, String.class, Double.class };
+
+							public Class getColumnClass(int columnIndex) {
+								return columnTypes[columnIndex];
+							}
+
+							boolean[] canEdit = new boolean[] { false, false,
+									false, false };
+
+							public boolean isCellEditable(int rowIndex,
+									int columnIndex) {
+								return canEdit[columnIndex];
+							}
+						});
+						table.setBounds(10, 27, 588, 195);
+						JScrollPane scrollPane = new JScrollPane(table);
+						scrollPane.setBounds(10, 52, 818, 300);
+						table.setFillsViewportHeight(true);
+						contentPanel.add(scrollPane);
+						DefaultTableModel model = (DefaultTableModel) table
+								.getModel();
+
+						ArrayList<Sale> saleList = saleCtr.findAllSales();
+						model.removeRow(0);
+
+						for (Sale sale : saleList) {
+
+							model.addRow(new Object[] { sale.getId(),
+									sale.getDate(), sale.getCustomer().getId(),
+									sale.getTotalPrice() });
+						}
+
+						JTextField txtSearch = new JTextField();
+						txtSearch.setBounds(15, 11, 86, 25);
+						contentPanel.add(txtSearch);
+						txtSearch.setColumns(10);
+
+						JButton btnSearch = new JButton("Search");
+						btnSearch.setBounds(111, 11, 89, 25);
+						btnSearch.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								functionalityCtr.addClick();
+								String search = txtSearch.getText();
+								boolean flag = false;
+								try {
+									Integer.parseInt(search);
+									flag = true;
+								} catch (Exception e2) {
+								}
+
+								Sale sale = new Sale();
+
+								if (functionalityCtr.getClicks() <= 1) {
+									int rowCount = model.getRowCount();
+									for (int i = rowCount - 1; i >= 0; i--) {
+										model.removeRow(i);
+									}
+								}
+
+								if (flag) {
+									sale = saleCtr.findById(Integer
+											.parseInt(search));
+								}
+								model.addRow(new Object[] { sale.getId(),
+										sale.getDate(),
+										sale.getCustomer().getId(),
+										sale.getTotalPrice() });
+								txtSearch.setText("");
+							}
+						});
+						contentPanel.add(btnSearch);
+
+						JButton btnShowProducts = new JButton("Show items");
+						btnShowProducts.setBounds(705, 11, 120, 25);
+						btnShowProducts.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+
+								for (int index = 0; index < saleID.size(); index++) {
+									saleID.remove(index);
+								}
+
+								int[] vals = table.getSelectedRows();
+								for (int i : vals) {
+									saleID.add(table.getValueAt(i, 0)
+											.toString());
+								}
+
+								Table frame = new Table();
+								frame.pack();
+								frame.setBounds(200, 200, 500, 250);
+								frame.setTitle("Products in sales");
+								frame.setVisible(true);
+
+							}
+						});
+						contentPanel.add(btnShowProducts);
+
+						JButton btnDelete = new JButton("Delete");
+						btnDelete.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+
+								int[] vals = table.getSelectedRows();
+								boolean flag = true;
+								for (int i : vals) {
+
+									try {
+										saleCtr.deletePartSale(Integer
+												.parseInt(table
+														.getValueAt(i, 0)
+														.toString()));
+										// ic.deleteInvoice(Integer.parseInt(table
+										// .getValueAt(i, 0).toString()));
+										saleCtr.deleteSale(Integer
+												.parseInt(table
+														.getValueAt(i, 0)
+														.toString()));
+									} catch (Exception e1) {
+										e1.printStackTrace();
+										flag = false;
+									}
+
+								}
+
+								btnShowSale.doClick();
+
+							}
+
+						});
+						btnDelete.setBounds(739, 380, 89, 23);
+						contentPanel.add(btnDelete);
+
+						invalidate();
+						revalidate();
+						repaint();
+						setVisible(true);
 
 					}
 				});
+
 				invalidate();
 				revalidate();
 				repaint();
@@ -180,15 +591,106 @@ public class GetFixed extends JFrame {
 					public void actionPerformed(ActionEvent e) {
 						contentPanel.removeAll();
 
-						ShowOrderUI showOrderUi = new ShowOrderUI(contentPanel,
-								secondaryMenuPanel);
-						showOrderUi.make();
+						table = new JTable();
+						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+						table.setModel(new DefaultTableModel(new Object[][] { {
+								null, null, null, null, null, null, null } },
+								new String[] { "ID", "Date", "Product Barcode",
+										"Product Name", "Price/pc", "Quantity",
+										"Price" }) {
+							Class[] columnTypes = new Class[] { Integer.class,
+									String.class, Integer.class, String.class,
+									Double.class, Integer.class, Double.class };
+
+							public Class getColumnClass(int columnIndex) {
+								return columnTypes[columnIndex];
+							}
+
+							boolean[] canEdit = new boolean[] { false, false,
+									false, false, false, false, false };
+
+							public boolean isCellEditable(int rowIndex,
+									int columnIndex) {
+								return canEdit[columnIndex];
+							}
+						});
+						table.setBounds(10, 27, 588, 195);
+						JScrollPane scrollPane = new JScrollPane(table);
+						scrollPane.setBounds(10, 52, 818, 300);
+						table.setFillsViewportHeight(true);
+						contentPanel.add(scrollPane);
+						DefaultTableModel model = (DefaultTableModel) table
+								.getModel();
+
+						ArrayList<Order> orderList = orderCtr.findAllOrders();
+						model.removeRow(0);
+
+						for (Order order : orderList) {
+
+							model.addRow(new Object[] { order.getId(),
+									order.getDate(),
+									order.getProduct().getBarcode(),
+									order.getProduct().getName(),
+									order.getProduct().getOrderingPrice(),
+									order.getAmount(), order.getPrice() });
+						}
+
+						JTextField txtSearch = new JTextField();
+						txtSearch.setBounds(15, 11, 86, 25);
+						contentPanel.add(txtSearch);
+						txtSearch.setColumns(10);
+
+						JButton btnSearch = new JButton("Search");
+						btnSearch.setBounds(111, 11, 89, 25);
+						btnSearch.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								functionalityCtr.addClick();
+								String search = txtSearch.getText();
+								boolean flag = false;
+								try {
+									Integer.parseInt(search);
+									flag = true;
+								} catch (Exception e2) {
+								}
+
+								Order order = new Order();
+
+								if (functionalityCtr.getClicks() <= 1) {
+									int rowCount = model.getRowCount();
+									for (int i = rowCount - 1; i >= 0; i--) {
+										model.removeRow(i);
+									}
+								}
+
+								if (flag) {
+									order = orderCtr.findById(Integer
+											.parseInt(search));
+								}
+								model.addRow(new Object[] { order.getId(),
+										order.getDate(),
+										order.getProduct().getBarcode(),
+										order.getProduct().getName(),
+										order.getProduct().getOrderingPrice(),
+										order.getAmount(), order.getPrice() });
+								txtSearch.setText("");
+							}
+						});
+						contentPanel.add(btnSearch);
+
+						invalidate();
+						revalidate();
+						repaint();
+						setVisible(true);
+
 					}
 				});
+
 				invalidate();
 				revalidate();
 				repaint();
 				setVisible(true);
+
 			}
 		});
 		mainMenuPanel.add(btnOrders);
@@ -210,6 +712,369 @@ public class GetFixed extends JFrame {
 					public void actionPerformed(ActionEvent e) {
 
 						contentPanel.removeAll();
+
+						AddProductUI addProductUI = new AddProductUI(contentPanel, secondaryMenuPanel);
+						addProductUI.make();
+					}
+				});
+
+				JButton btnShowProducts = new JButton("Show product");
+				secondaryMenuPanel.add(btnShowProducts);
+				btnShowProducts.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+	
+						contentPanel.removeAll();
+						
+						ShowProductUI shwoProductUI = new ShowProductUI(contentPanel, secondaryMenuPanel, btnShowProducts);
+						shwoProductUI.make();
+					}
+				});
+						
+
+				invalidate();
+				revalidate();
+				repaint();
+				setVisible(true);
+
+			}
+		});
+		mainMenuPanel.add(btnProducts);
+
+		// ////////////////////////////////////////////////////////
+		// ////////////////////////////////////////////////////////
+		// /////////////////SERVICES/////////////////////////////////
+		// ///////////////////////////////////////////////////////
+		// //////////////////////////////////////////////////////
+
+		JButton btnServices = new JButton("Services");
+		btnServices.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				secondaryMenuPanel.removeAll();
+
+				JButton btnAddService = new JButton("Add service");
+				secondaryMenuPanel.add(btnAddService);
+				btnAddService.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+
+						contentPanel.removeAll();
+
+						functionalityCtr.removeAllClicks();
+						functionalityCtr.removeAllIds();
+
+						table = new JTable();
+						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+						table.setModel(new DefaultTableModel(new Object[][] { {
+								null, null } },
+								new String[] { "Name", "Price" }) {
+							Class[] columnTypes = new Class[] { String.class,
+									Float.class };
+
+							public Class getColumnClass(int columnIndex) {
+								return columnTypes[columnIndex];
+							}
+
+							boolean[] canEdit = new boolean[] { true, true };
+
+							public boolean isCellEditable(int rowIndex,
+									int columnIndex) {
+								return canEdit[columnIndex];
+							}
+						});
+						table.setBounds(10, 27, 588, 195);
+						JScrollPane scrollPane = new JScrollPane(table);
+						scrollPane.setBounds(10, 52, 818, 300);
+						table.setFillsViewportHeight(true);
+						contentPanel.add(scrollPane);
+						DefaultTableModel model = (DefaultTableModel) table
+								.getModel();
+
+						JButton btnAdd = new JButton("Add");
+						btnAdd.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent arg0) {
+								model.addRow(new Object[] { null, null });
+							}
+						});
+						btnAdd.setBounds(635, 11, 89, 23);
+						contentPanel.add(btnAdd);
+
+						JButton btnRemove = new JButton("Remove");
+						btnRemove.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								int[] rows = table.getSelectedRows();
+								for (int i = 0; i < rows.length; i++) {
+									model.removeRow(rows[i] - i);
+								}
+							}
+						});
+						btnRemove.setBounds(739, 11, 89, 23);
+						contentPanel.add(btnRemove);
+
+						JButton btnSubmit = new JButton("Submit");
+						btnSubmit.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+
+								table.selectAll();
+								int[] vals = table.getSelectedRows();
+								for (int i = 0; i < vals.length; i++) {
+									ArrayList<String> values = new ArrayList<>();
+									for (int x = 0; x < table.getColumnCount(); x++) {
+										values.add(table.getValueAt(i, x)
+												.toString());
+									}
+
+									try {
+										serviceCtr.insertService(values.get(0),
+												Double.parseDouble(values
+														.get(1)));
+
+									} catch (Exception e1) {
+										e1.printStackTrace();
+									}
+									values.clear();
+								}
+
+							}
+						});
+						btnSubmit.setBounds(739, 380, 89, 23);
+						contentPanel.add(btnSubmit);
+
+						invalidate();
+						revalidate();
+						repaint();
+						setVisible(true);
+
+					}
+				});
+
+				JButton btnShowService = new JButton("Show service");
+				secondaryMenuPanel.add(btnShowService);
+				btnShowService.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+
+						contentPanel.removeAll();
+
+						functionalityCtr.removeAllClicks();
+						functionalityCtr.removeAllIds();
+
+						table = new JTable();
+						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+						table.setModel(new DefaultTableModel(new Object[][] { {
+								null, null, null } }, new String[] { "Barcode",
+								"Name", "Price" }) {
+							Class[] columnTypes = new Class[] { Integer.class,
+									String.class, Float.class };
+
+							public Class getColumnClass(int columnIndex) {
+								return columnTypes[columnIndex];
+							}
+
+							boolean[] canEdit = new boolean[] { false, true,
+									true };
+
+							public boolean isCellEditable(int rowIndex,
+									int columnIndex) {
+								return canEdit[columnIndex];
+							}
+						});
+						table.setBounds(10, 27, 588, 195);
+						JScrollPane scrollPane = new JScrollPane(table);
+						scrollPane.setBounds(10, 52, 818, 300);
+						table.setFillsViewportHeight(true);
+						contentPanel.add(scrollPane);
+						DefaultTableModel model = (DefaultTableModel) table
+								.getModel();
+
+						JButton btnRemove = new JButton("Remove row");
+						btnRemove.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								int[] rows = table.getSelectedRows();
+								for (int index = 0; index < rows.length; index++) {
+									model.removeRow(rows[index] - index);
+								}
+							}
+						});
+						btnRemove.setBounds(720, 11, 105, 23);
+						contentPanel.add(btnRemove);
+
+						model.removeRow(0);
+
+						for (Object[] object : serviceCtr.addAllServices()) {
+							model.addRow(object);
+						}
+
+						txtSearch = new JTextField();
+						txtSearch.setBounds(15, 11, 86, 25);
+						contentPanel.add(txtSearch);
+						txtSearch.setColumns(10);
+
+						JButton btnSearch = new JButton("Search");
+						btnSearch.setBounds(111, 11, 89, 25);
+						btnSearch.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								functionalityCtr.addClick();
+								String search = txtSearch.getText();
+								boolean flag = false;
+								try {
+									Integer.parseInt(search);
+									flag = true;
+								} catch (Exception e2) {
+								}
+
+								if (functionalityCtr.getClicks() <= 1) {
+									int rowCount = model.getRowCount();
+									for (int i = rowCount - 1; i >= 0; i--) {
+										model.removeRow(i);
+									}
+								}
+
+								if (flag) {
+									model.addRow(serviceCtr
+											.addServiceByBarcode(Integer
+													.parseInt(search)));
+								} else {
+									model.addRow(serviceCtr
+											.addServiceByName(search));
+								}
+
+								txtSearch.setText("");
+							}
+						});
+						contentPanel.add(btnSearch);
+
+						JButton btnUpdate = new JButton("Update");
+						btnUpdate.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								int[] vals = table.getSelectedRows();
+								for (int i : vals) {
+									ArrayList<String> values = new ArrayList<>();
+									for (int x = 0; x < table.getColumnCount(); x++) {
+										values.add(table.getValueAt(i, x)
+												.toString());
+
+									}
+									serviceCtr.updateService(
+											Integer.parseInt(values.get(0)),
+											values.get(1),
+											Double.parseDouble(values.get(2)));
+								}
+							}
+						});
+						btnUpdate.setBounds(639, 380, 89, 23);
+						contentPanel.add(btnUpdate);
+
+						JButton btnDelete = new JButton("Delete");
+						btnDelete.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+
+								int[] vals = table.getSelectedRows();
+								boolean flag = true;
+								for (int i : vals) {
+
+									try {
+										Service service = serviceCtr
+												.findByBarcode(Integer
+														.parseInt(table
+																.getValueAt(i,
+																		0)
+																.toString()));
+										int barcode = service.getBarcode();
+										serviceCtr.deleteService(barcode);
+									} catch (Exception e1) {
+										e1.printStackTrace();
+										flag = false;
+									}
+
+								}
+								btnShowService.doClick();
+							}
+
+						});
+						btnDelete.setBounds(739, 380, 89, 23);
+						contentPanel.add(btnDelete);
+
+						invalidate();
+						revalidate();
+						repaint();
+						setVisible(true);
+
+					}
+				});
+
+				invalidate();
+				revalidate();
+				repaint();
+				setVisible(true);
+			}
+		});
+		mainMenuPanel.add(btnServices);
+
+		// ////////////////////////////////////////////////////////
+		// ////////////////////////////////////////////////////////
+		// /////////////////CUSTOMERS/////////////////////////////////
+		// ///////////////////////////////////////////////////////
+		// //////////////////////////////////////////////////////
+
+		JButton btnCustomers = new JButton("Customers");
+		btnCustomers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				secondaryMenuPanel.removeAll();
+
+				JButton btnAddCustomer = new JButton("Add customer");
+				secondaryMenuPanel.add(btnAddCustomer);
+				btnAddCustomer.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+
+						contentPanel.removeAll();
+
+						AddCustomerUI addCustomerUI = new AddCustomerUI(contentPanel, secondaryMenuPanel);
+						addCustomerUI.make();
+					}
+				});
+
+				JButton btnShowCustomer = new JButton("Show customer");
+				secondaryMenuPanel.add(btnShowCustomer);
+				btnShowCustomer.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+
+						contentPanel.removeAll();
+
+						ShowCustomerUI showCustomerUI = new ShowCustomerUI(contentPanel, secondaryMenuPanel, btnShowCustomer);
+						showCustomerUI.make();
+
+					}
+				});
+
+				invalidate();
+				revalidate();
+				repaint();
+				setVisible(true);
+			}
+		});
+		mainMenuPanel.add(btnCustomers);
+
+		// ////////////////////////////////////////////////////////
+		// ////////////////////////////////////////////////////////
+		// /////////////////EMOLOYEES/////////////////////////////////
+		// ///////////////////////////////////////////////////////
+		// //////////////////////////////////////////////////////
+
+		JButton btnEmployees = new JButton("Employees ");
+		btnEmployees.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				secondaryMenuPanel.removeAll();
+
+				JButton btnAddEmployee = new JButton("Add employee");
+				secondaryMenuPanel.add(btnAddEmployee);
+				btnAddEmployee.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+
+						contentPanel.removeAll();
+
+						functionalityCtr.removeAllIds();
+						functionalityCtr.removeAllClicks();
 
 						JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
 						JRadioButton rdbtnAarhus = new JRadioButton("Aarhus");
@@ -284,26 +1149,19 @@ public class GetFixed extends JFrame {
 						table = new JTable();
 						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
 						table.setModel(new DefaultTableModel(new Object[][] { {
-								null, null, null, null, null, null, null, null,
-								null, null, 0, null } }, new String[] {
-								"Barcode", "Name", "Selling price",
-								"Leasing price", "Ordering price",
-								"Price discount", "Amount discount", "Amount",
-								"Min amount", "Max amount", "Ordered Amount",
-								"Supplier ID" }) {
-							Class[] columnTypes = new Class[] { Integer.class,
-									String.class, Float.class, Float.class,
-									Float.class, Float.class, Integer.class,
-									Integer.class, Integer.class,
-									Integer.class, Integer.class, Integer.class };
+								null, null, null } }, new String[] { "Name",
+								"Surname", "Address", "Telephone", "E-mail",
+								"Password" }) {
+							Class[] columnTypes = new Class[] { String.class,
+									String.class, String.class, String.class,
+									String.class, String.class };
 
 							public Class getColumnClass(int columnIndex) {
 								return columnTypes[columnIndex];
 							}
 
 							boolean[] canEdit = new boolean[] { true, true,
-									true, true, true, true, true, true, true,
-									true, false, true };
+									true, true, true, true };
 
 							public boolean isCellEditable(int rowIndex,
 									int columnIndex) {
@@ -321,16 +1179,14 @@ public class GetFixed extends JFrame {
 						JButton btnAdd = new JButton("Add");
 						btnAdd.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent arg0) {
-
 								model.addRow(new Object[] { null, null, null,
-										null, null, null, null, null, null,
-										null, 0, null });
+										null, null, null });
 							}
 						});
-						btnAdd.setBounds(625, 11, 89, 23);
+						btnAdd.setBounds(635, 11, 89, 23);
 						contentPanel.add(btnAdd);
 
-						JButton btnRemove = new JButton("Remove row");
+						JButton btnRemove = new JButton("Remove");
 						btnRemove.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								int[] rows = table.getSelectedRows();
@@ -339,7 +1195,7 @@ public class GetFixed extends JFrame {
 								}
 							}
 						});
-						btnRemove.setBounds(720, 11, 105, 23);
+						btnRemove.setBounds(739, 11, 89, 23);
 						contentPanel.add(btnRemove);
 
 						JButton btnSubmit = new JButton("Submit");
@@ -350,7 +1206,6 @@ public class GetFixed extends JFrame {
 								int[] vals = table.getSelectedRows();
 								for (int i = 0; i < vals.length; i++) {
 									ArrayList<String> values = new ArrayList<>();
-
 									for (int x = 0; x < table.getColumnCount(); x++) {
 										values.add(table.getValueAt(i, x)
 												.toString());
@@ -360,30 +1215,13 @@ public class GetFixed extends JFrame {
 
 										for (Integer integer : functionalityCtr
 												.getIds()) {
-											productCtr.insertProduct(Integer
-													.parseInt(values.get(0)),
-													values.get(1), Double
-															.parseDouble(values
-																	.get(2)),
-													Double.parseDouble(values
-															.get(3)), Double
-															.parseDouble(values
-																	.get(4)),
-													Double.parseDouble(values
-															.get(5)), Integer
-															.parseInt(values
-																	.get(6)),
-													Integer.parseInt(values
-															.get(7)), Integer
-															.parseInt(values
-																	.get(8)),
-													Integer.parseInt(values
-															.get(9)), Integer
-															.parseInt(values
-																	.get(10)),
-													integer, Integer
-															.parseInt(values
-																	.get(11)));
+											employeeCtr.insertEmployee(
+													values.get(0),
+													values.get(1),
+													values.get(2),
+													values.get(3),
+													values.get(4),
+													values.get(5), integer);
 										}
 
 									} catch (Exception e1) {
@@ -405,10 +1243,11 @@ public class GetFixed extends JFrame {
 					}
 				});
 
-				JButton btnShowProducts = new JButton("Show product");
-				secondaryMenuPanel.add(btnShowProducts);
-				btnShowProducts.addActionListener(new ActionListener() {
+				JButton btnShowEmployee = new JButton("Show employee");
+				secondaryMenuPanel.add(btnShowEmployee);
+				btnShowEmployee.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+
 						contentPanel.removeAll();
 
 						functionalityCtr.removeAllIds();
@@ -416,28 +1255,23 @@ public class GetFixed extends JFrame {
 
 						table = new JTable();
 						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-						table.setModel(new DefaultTableModel(new Object[][] { {
-								null, null, null, null, null, null, null, null,
-								null, null, null, null, null } }, new String[] {
-								"Barcode", "Name", "Selling price",
-								"Leasing price", "Ordering price",
-								"Price discount", "Amount discount", "Amount",
-								"Min amount", "Max amount", "Ordered Amount",
-								"Department", "Supplier ID" }) {
+						table.setModel(new DefaultTableModel(
+								new Object[][] { { null, null, null, null,
+										null, null, null, null } },
+								new String[] { "ID", "Name", "Surname",
+										"Address", "Telephone", "E-mail",
+										"Password", "Department" }) {
 							Class[] columnTypes = new Class[] { Integer.class,
-									String.class, Float.class, Float.class,
-									Float.class, Float.class, Integer.class,
-									Integer.class, Integer.class,
-									Integer.class, Integer.class, String.class,
-									Integer.class };
+									String.class, String.class, String.class,
+									String.class, String.class, String.class,
+									String.class };
 
 							public Class getColumnClass(int columnIndex) {
 								return columnTypes[columnIndex];
 							}
 
 							boolean[] canEdit = new boolean[] { false, true,
-									true, true, true, true, true, false, true,
-									true, false, false, true };
+									true, true, true, true, true, true };
 
 							public boolean isCellEditable(int rowIndex,
 									int columnIndex) {
@@ -466,7 +1300,7 @@ public class GetFixed extends JFrame {
 
 						model.removeRow(0);
 
-						for (Object[] object : productCtr.addAllProducts()) {
+						for (Object[] object : employeeCtr.addAllEmployees()) {
 							model.addRow(object);
 						}
 
@@ -489,8 +1323,8 @@ public class GetFixed extends JFrame {
 										model.fireTableDataChanged();
 									}
 
-									for (Object[] object : productCtr
-											.addAllProductsForDepartment(departmentId)) {
+									for (Object[] object : employeeCtr
+											.addAllEmployeesForDepartment(departmentId)) {
 										model.addRow(object);
 									}
 								} else {
@@ -503,7 +1337,7 @@ public class GetFixed extends JFrame {
 											values.add(table.getValueAt(rows,
 													columns).toString());
 										}
-										String departmentName = values.get(11);
+										String departmentName = values.get(7);
 										values.clear();
 										if (departmentName.equals(rdbtnAalborg
 												.getText())) {
@@ -535,8 +1369,8 @@ public class GetFixed extends JFrame {
 										model.fireTableDataChanged();
 									}
 
-									for (Object[] object : productCtr
-											.addAllProductsForDepartment(departmentId)) {
+									for (Object[] object : employeeCtr
+											.addAllEmployeesForDepartment(departmentId)) {
 										model.addRow(object);
 									}
 								} else {
@@ -549,7 +1383,7 @@ public class GetFixed extends JFrame {
 											values.add(table.getValueAt(rows,
 													columns).toString());
 										}
-										String departmentName = values.get(11);
+										String departmentName = values.get(7);
 										values.clear();
 										if (departmentName.equals(rdbtnAarhus
 												.getText())) {
@@ -581,8 +1415,8 @@ public class GetFixed extends JFrame {
 										model.fireTableDataChanged();
 									}
 
-									for (Object[] object : productCtr
-											.addAllProductsForDepartment(departmentId)) {
+									for (Object[] object : employeeCtr
+											.addAllEmployeesForDepartment(departmentId)) {
 										model.addRow(object);
 									}
 								} else {
@@ -594,7 +1428,7 @@ public class GetFixed extends JFrame {
 											values.add(table.getValueAt(rows,
 													columns).toString());
 										}
-										String departmentName = values.get(11);
+										String departmentName = values.get(7);
 										values.clear();
 										if (departmentName.equals(rdbtnOdense
 												.getText())) {
@@ -628,8 +1462,8 @@ public class GetFixed extends JFrame {
 										model.fireTableDataChanged();
 									}
 
-									for (Object[] object : productCtr
-											.addAllProductsForDepartment(departmentId)) {
+									for (Object[] object : employeeCtr
+											.addAllEmployeesForDepartment(departmentId)) {
 										model.addRow(object);
 									}
 								} else {
@@ -641,7 +1475,7 @@ public class GetFixed extends JFrame {
 											values.add(table.getValueAt(rows,
 													columns).toString());
 										}
-										String departmentName = values.get(11);
+										String departmentName = values.get(7);
 										values.clear();
 										if (departmentName
 												.equals(rdbtnCopenhagen
@@ -681,12 +1515,12 @@ public class GetFixed extends JFrame {
 								}
 
 								if (flag) {
-									model.addRow(productCtr
-											.addProductByBarcode(Integer
+									model.addRow(employeeCtr
+											.addEmployeeById(Integer
 													.parseInt(search)));
 								} else {
-									model.addRow(productCtr
-											.addProductByName(search));
+									model.addRow(employeeCtr
+											.addEmployeeByName(search));
 								}
 
 								txtSearch.setText("");
@@ -705,342 +1539,12 @@ public class GetFixed extends JFrame {
 												.toString());
 
 									}
-									productCtr.updateProduct(
-											Integer.parseInt(values.get(0)),
-											values.get(1),
-											Double.parseDouble(values.get(2)),
-											Double.parseDouble(values.get(3)),
-											Double.parseDouble(values.get(4)),
-											Double.parseDouble(values.get(5)),
-											Integer.parseInt(values.get(6)),
-											Integer.parseInt(values.get(7)),
-											Integer.parseInt(values.get(8)),
-											Integer.parseInt(values.get(9)),
-											Integer.parseInt(values.get(10)),
-											Integer.parseInt(values.get(12)));
-								}
-							}
-						});
-						btnUpdate.setBounds(639, 380, 89, 23);
-						contentPanel.add(btnUpdate);
-
-						JButton btnDelete = new JButton("Delete");
-						btnDelete.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-
-								int[] vals = table.getSelectedRows();
-								boolean flag = true;
-								for (int i : vals) {
-
-									try {
-										Product product = productCtr
-												.findByBarcodeAndDepartmentLocation(
-														Integer.parseInt(table
-																.getValueAt(i,
-																		0)
-																.toString()),
-														table.getValueAt(i, 11)
-																.toString());
-										int barcode = product.getBarcode();
-										int departmentId = product
-												.getDepartment().getId();
-										productCtr.deleteProduct(barcode,
-												departmentId);
-									} catch (Exception e1) {
-										e1.printStackTrace();
-										flag = false;
-									}
-
-								}
-								btnShowProducts.doClick();
-							}
-
-						});
-						btnDelete.setBounds(739, 380, 89, 23);
-						contentPanel.add(btnDelete);
-
-						invalidate();
-						revalidate();
-						repaint();
-						setVisible(true);
-
-					}
-				});
-
-				invalidate();
-				revalidate();
-				repaint();
-				setVisible(true);
-
-			}
-		});
-		mainMenuPanel.add(btnProducts);
-
-		// ////////////////////////////////////////////////////////
-		// ////////////////////////////////////////////////////////
-		// /////////////////SERVICES/////////////////////////////////
-		// ///////////////////////////////////////////////////////
-		// //////////////////////////////////////////////////////
-
-		JButton btnServices = new JButton("Services");
-		btnServices.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				secondaryMenuPanel.removeAll();
-
-				JButton btnAddService = new JButton("Add service");
-				secondaryMenuPanel.add(btnAddService);
-				btnAddService.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-						AddServiceUI addServiceUI = new AddServiceUI(contentPanel, secondaryMenuPanel);
-						addServiceUI.make();
-					}
-				});
-
-				JButton btnShowService = new JButton("Show service");
-				secondaryMenuPanel.add(btnShowService);
-				btnShowService.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-						ShowServiceUI showServiceUI = new ShowServiceUI(contentPanel, secondaryMenuPanel, btnShowService);
-						showServiceUI.make();
-					}
-				});
-				invalidate();
-				revalidate();
-				repaint();
-				setVisible(true);
-			}
-		});
-		mainMenuPanel.add(btnServices);
-
-		// ////////////////////////////////////////////////////////
-		// ////////////////////////////////////////////////////////
-		// /////////////////CUSTOMERS/////////////////////////////////
-		// ///////////////////////////////////////////////////////
-		// //////////////////////////////////////////////////////
-
-		JButton btnCustomers = new JButton("Customers");
-		btnCustomers.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				secondaryMenuPanel.removeAll();
-
-				JButton btnAddCustomer = new JButton("Add customer");
-				secondaryMenuPanel.add(btnAddCustomer);
-				btnAddCustomer.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-
-						contentPanel.removeAll();
-
-						functionalityCtr.removeAllIds();
-						functionalityCtr.removeAllClicks();
-
-						table = new JTable();
-						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-						table.setModel(new DefaultTableModel(new Object[][] { {
-								null, null, null, null, null } }, new String[] {
-								"Name", "Surname", "Telephone", "E-mail",
-								"Discount(%)" }) {
-							Class[] columnTypes = new Class[] { String.class,
-									String.class, String.class, String.class,
-									Integer.class };
-
-							public Class getColumnClass(int columnIndex) {
-								return columnTypes[columnIndex];
-							}
-
-							boolean[] canEdit = new boolean[] { true, true,
-									true, true, true };
-
-							public boolean isCellEditable(int rowIndex,
-									int columnIndex) {
-								return canEdit[columnIndex];
-							}
-						});
-						table.setBounds(10, 27, 588, 195);
-						JScrollPane scrollPane = new JScrollPane(table);
-						scrollPane.setBounds(10, 52, 818, 300);
-						table.setFillsViewportHeight(true);
-						contentPanel.add(scrollPane);
-						DefaultTableModel model = (DefaultTableModel) table
-								.getModel();
-
-						JButton btnAdd = new JButton("Add");
-						btnAdd.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent arg0) {
-								//
-								model.addRow(new Object[] { null, null, null,
-										null, null });
-							}
-						});
-						btnAdd.setBounds(635, 11, 89, 23);
-						contentPanel.add(btnAdd);
-
-						JButton btnRemove = new JButton("Remove");
-						btnRemove.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								int[] rows = table.getSelectedRows();
-								for (int i = 0; i < rows.length; i++) {
-									model.removeRow(rows[i] - i);
-								}
-							}
-						});
-						btnRemove.setBounds(739, 11, 89, 23);
-						contentPanel.add(btnRemove);
-
-						JButton btnSubmit = new JButton("Submit");
-						btnSubmit.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-
-								table.selectAll();
-								int[] vals = table.getSelectedRows();
-								for (int i = 0; i < vals.length; i++) {
-									ArrayList<String> values = new ArrayList<>();
-									for (int x = 0; x < table.getColumnCount(); x++) {
-										values.add(table.getValueAt(i, x)
-												.toString());
-									}
-
-									try {
-										customerCtr.insertCustomer(
-												values.get(0), values.get(1),
-												values.get(2), values.get(3),
-												Integer.parseInt(values.get(4)));
-
-									} catch (Exception e1) {
-										e1.printStackTrace();
-									}
-									values.clear();
-								}
-
-							}
-						});
-						btnSubmit.setBounds(739, 380, 89, 23);
-						contentPanel.add(btnSubmit);
-
-						invalidate();
-						revalidate();
-						repaint();
-						setVisible(true);
-
-					}
-				});
-
-				JButton btnShowCustomer = new JButton("Show customer");
-				secondaryMenuPanel.add(btnShowCustomer);
-				btnShowCustomer.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-
-						contentPanel.removeAll();
-
-						functionalityCtr.removeAllIds();
-						functionalityCtr.removeAllClicks();
-
-						table = new JTable();
-						table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-						table.setModel(new DefaultTableModel(new Object[][] { {
-								null, null, null, null, null, null } },
-								new String[] { "ID", "Name", "Surname",
-										"Telephone", "E-mail", "Discount(%)" }) {
-							Class[] columnTypes = new Class[] { Integer.class,
-									String.class, String.class, String.class,
-									String.class, Integer.class };
-
-							public Class getColumnClass(int columnIndex) {
-								return columnTypes[columnIndex];
-							}
-
-							boolean[] canEdit = new boolean[] { false, true,
-									true, true, true, true };
-
-							public boolean isCellEditable(int rowIndex,
-									int columnIndex) {
-								return canEdit[columnIndex];
-							}
-						});
-						table.setBounds(10, 27, 588, 195);
-						JScrollPane scrollPane = new JScrollPane(table);
-						scrollPane.setBounds(10, 52, 818, 300);
-						table.setFillsViewportHeight(true);
-						contentPanel.add(scrollPane);
-						DefaultTableModel model = (DefaultTableModel) table
-								.getModel();
-
-						JButton btnRemove = new JButton("Remove row");
-						btnRemove.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								int[] rows = table.getSelectedRows();
-								for (int index = 0; index < rows.length; index++) {
-									model.removeRow(rows[index] - index);
-								}
-							}
-						});
-						btnRemove.setBounds(720, 11, 105, 23);
-						contentPanel.add(btnRemove);
-
-						model.removeRow(0);
-
-						for (Object[] object : customerCtr.addAllCustomers()) {
-							model.addRow(object);
-						}
-
-						txtSearch = new JTextField();
-						txtSearch.setBounds(15, 11, 86, 25);
-						contentPanel.add(txtSearch);
-						txtSearch.setColumns(10);
-
-						JButton btnSearch = new JButton("Search");
-						btnSearch.setBounds(111, 11, 89, 25);
-						btnSearch.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								functionalityCtr.addClick();
-								String search = txtSearch.getText();
-								boolean flag = false;
-								try {
-									Integer.parseInt(search);
-									flag = true;
-								} catch (Exception e2) {
-								}
-
-								if (functionalityCtr.getClicks() <= 1) {
-									int rowCount = model.getRowCount();
-									for (int i = rowCount - 1; i >= 0; i--) {
-										model.removeRow(i);
-									}
-								}
-
-								if (flag) {
-									model.addRow(customerCtr
-											.addCustomerById(Integer
-													.parseInt(search)));
-								} else {
-									model.addRow(customerCtr
-											.addCustomerByName(search));
-								}
-
-								txtSearch.setText("");
-							}
-						});
-						contentPanel.add(btnSearch);
-
-						JButton btnUpdate = new JButton("Update");
-						btnUpdate.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								int[] vals = table.getSelectedRows();
-								for (int i : vals) {
-									ArrayList<String> values = new ArrayList<>();
-									for (int x = 0; x < table.getColumnCount(); x++) {
-										values.add(table.getValueAt(i, x)
-												.toString());
-
-									}
-									customerCtr.updateCustomer(
+									employeeCtr.updateEmployee(
 											Integer.parseInt(values.get(0)),
 											values.get(1), values.get(2),
 											values.get(3), values.get(4),
-											Integer.parseInt(values.get(5)));
+											values.get(5), values.get(6),
+											values.get(7));
 								}
 							}
 						});
@@ -1056,21 +1560,21 @@ public class GetFixed extends JFrame {
 								for (int i : vals) {
 
 									try {
-										Customer customer = customerCtr
+										Employee employee = employeeCtr
 												.findById(Integer
 														.parseInt(table
 																.getValueAt(i,
 																		0)
 																.toString()));
-										int id = customer.getId();
-										customerCtr.deleteCustomer(id);
+										int id = employee.getId();
+										employeeCtr.deleteEmployee(id);
 									} catch (Exception e1) {
 										e1.printStackTrace();
 										flag = false;
 									}
 
 								}
-								btnShowCustomer.doClick();
+								btnShowEmployee.doClick();
 							}
 
 						});
@@ -1082,49 +1586,6 @@ public class GetFixed extends JFrame {
 						repaint();
 						setVisible(true);
 
-					}
-				});
-
-				invalidate();
-				revalidate();
-				repaint();
-				setVisible(true);
-			}
-		});
-		mainMenuPanel.add(btnCustomers);
-
-		// ////////////////////////////////////////////////////////
-		// ////////////////////////////////////////////////////////
-		// /////////////////EMOLOYEES/////////////////////////////////
-		// ///////////////////////////////////////////////////////
-		// //////////////////////////////////////////////////////
-
-		JButton btnEmployees = new JButton("Employees ");
-		btnEmployees.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				secondaryMenuPanel.removeAll();
-
-				JButton btnAddEmployee = new JButton("Add employee");
-				secondaryMenuPanel.add(btnAddEmployee);
-				btnAddEmployee.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-						
-						AddEmployeeUI addEmployeeUI = new AddEmployeeUI(contentPanel, secondaryMenuPanel);
-						addEmployeeUI.main();
-					}
-				});
-
-				JButton btnShowEmployee = new JButton("Show employee");
-				secondaryMenuPanel.add(btnShowEmployee);
-				btnShowEmployee.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-						ShowEmployeeUI showEmployeeUI = new ShowEmployeeUI(contentPanel, secondaryMenuPanel, btnAddEmployee);
-						showEmployeeUI.make();
-						
-						
 					}
 				});
 

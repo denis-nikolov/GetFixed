@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Ivan/Documents/GitHub/https---github.com-mihailtsanovv-Workshop-ucn/Code/jarFiles/junit-4.10.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Ivan/Documents/GitHub/https---github.com-mihailtsanovv-Workshop-ucn/Code/jarFiles/sqljdbc4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Ivan/Documents/GitHub/https---github.com-mihailtsanovv-Workshop-ucn/Code/jarFiles/swing-layout-1.0.1.jar"/>
+	<classpathentry kind="lib" path="D:/UCN/2ndSemester/Subjects/Programming/Sessions/Session04 - 20.2.2015 - Embedded SQL/jarFiles/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="D:/UCN/2ndSemester/Subjects/Programming/Sessions/Session04 - 20.2.2015 - Embedded SQL/jarFiles/sqljdbc4.jar"/>
+	<classpathentry kind="lib" path="D:/UCN/2ndSemester/Subjects/Programming/Sessions/Session04 - 20.2.2015 - Embedded SQL/jarFiles/swing-layout-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
