@@ -28,19 +28,20 @@ public class AddProductUI {
 	}
 
 	void make() {
+		contentPanel.removeAll();
+
+		functionalityCtr.removeAllIds();
+		functionalityCtr.removeAllClicks();
+		
 		JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
 		JRadioButton rdbtnAarhus = new JRadioButton("Aarhus");
 		JRadioButton rdbtnOdense = new JRadioButton("Odense");
 		JRadioButton rdbtnCopenhagen = new JRadioButton("Copenhagen");
 
-		functionalityCtr.removeAllIds();
-		functionalityCtr.removeAllClicks();
-
 		rdbtnAalborg.setBounds(22, 11, 109, 23);
 		rdbtnAalborg.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				department = departmentCtr.findByLocation(rdbtnAalborg
-						.getText());
+				department = departmentCtr.findByLocation(rdbtnAalborg.getText());
 				int departmentId = department.getId();
 				if (rdbtnAalborg.isSelected()) {
 					functionalityCtr.addId(departmentId);
@@ -82,8 +83,7 @@ public class AddProductUI {
 		rdbtnCopenhagen.setBounds(355, 11, 109, 23);
 		rdbtnCopenhagen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				department = departmentCtr.findByLocation(rdbtnCopenhagen
-						.getText());
+				department = departmentCtr.findByLocation(rdbtnCopenhagen.getText());
 				int departmentId = department.getId();
 				if (rdbtnCopenhagen.isSelected()) {
 					functionalityCtr.addId(departmentId);
@@ -96,23 +96,19 @@ public class AddProductUI {
 
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		table.setModel(new DefaultTableModel(new Object[][] { { null, null,
-				null, null, null, null, null, null, null, null, 0, null } },
-				new String[] { "Barcode", "Name", "Selling price",
-						"Leasing price", "Ordering price", "Price discount",
-						"Amount discount", "Amount", "Min amount",
-						"Max amount", "Ordered Amount", "Supplier ID" }) {
-			Class[] columnTypes = new Class[] { Integer.class, String.class,
-					Float.class, Float.class, Float.class, Float.class,
-					Integer.class, Integer.class, Integer.class, Integer.class,
-					Integer.class, Integer.class };
+		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null, null, null, null, null,
+				null, 0, null } }, new String[] { "Barcode", "Name", "Selling price", "Leasing price",
+				"Ordering price", "Price discount", "Amount discount", "Amount", "Min amount", "Max amount",
+				"Ordered Amount", "Supplier ID" }) {
+			Class[] columnTypes = new Class[] { Integer.class, String.class, Float.class, Float.class, Float.class,
+					Float.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class,
+					Integer.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 
-			boolean[] canEdit = new boolean[] { true, true, true, true, true,
-					true, true, true, true, true, false, true };
+			boolean[] canEdit = new boolean[] { true, true, true, true, true, true, true, true, true, true, false, true };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];
@@ -129,8 +125,7 @@ public class AddProductUI {
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				model.addRow(new Object[] { null, null, null, null, null, null,
-						null, null, null, null, 0, null });
+				model.addRow(new Object[] { null, null, null, null, null, null, null, null, null, null, 0, null });
 			}
 		});
 		btnAdd.setBounds(625, 11, 89, 23);
@@ -164,19 +159,12 @@ public class AddProductUI {
 					try {
 
 						for (Integer integer : functionalityCtr.getIds()) {
-							productCtr.insertProduct(
-									Integer.parseInt(values.get(0)),
-									values.get(1),
-									Double.parseDouble(values.get(2)),
-									Double.parseDouble(values.get(3)),
-									Double.parseDouble(values.get(4)),
-									Double.parseDouble(values.get(5)),
-									Integer.parseInt(values.get(6)),
-									Integer.parseInt(values.get(7)),
-									Integer.parseInt(values.get(8)),
-									Integer.parseInt(values.get(9)),
-									Integer.parseInt(values.get(10)), integer,
-									Integer.parseInt(values.get(11)));
+							productCtr.insertProduct(Integer.parseInt(values.get(0)), values.get(1),
+									Double.parseDouble(values.get(2)), Double.parseDouble(values.get(3)),
+									Double.parseDouble(values.get(4)), Double.parseDouble(values.get(5)),
+									Integer.parseInt(values.get(6)), Integer.parseInt(values.get(7)),
+									Integer.parseInt(values.get(8)), Integer.parseInt(values.get(9)),
+									Integer.parseInt(values.get(10)), integer, Integer.parseInt(values.get(11)));
 						}
 
 					} catch (Exception e1) {
@@ -187,8 +175,7 @@ public class AddProductUI {
 
 			}
 		});
-		btnSubmit.setBounds(738, 355, 89, 23);
-		
+		btnSubmit.setBounds(530, 355, 89, 23);
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();

@@ -59,8 +59,8 @@ public class CreateSaleUI {
 
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null, } }, new String[] { "Barcode", "Name", "Price/pc",
-				"Quantity", "Total" }) {
+		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null, } }, new String[] {
+				"Barcode", "Name", "Price/pc", "Quantity", "Total" }) {
 			Class[] columnTypes = new Class[] { Integer.class, String.class, Double.class, Integer.class, Double.class };
 
 			public Class getColumnClass(int columnIndex) {
@@ -121,7 +121,8 @@ public class CreateSaleUI {
 				if (e.getSource() == textFieldCustomer) {
 					String id = textFieldCustomer.getText();
 					if (customerCtr.findById(Integer.parseInt(id)) == null) {
-						JOptionPane.showMessageDialog(null, "There is no customer with ID " + id + " !", "ID Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "There is no customer with ID " + id + " !", "ID Error",
+								JOptionPane.ERROR_MESSAGE);
 						textFieldCustomer.setText("0");
 					}
 				}
@@ -188,7 +189,8 @@ public class CreateSaleUI {
 				if (intColumn == 0) {
 					String text = textFieldCustomer.getText();
 					if (text.length() == 0 || text == null) {
-						JOptionPane.showMessageDialog(null, "You have not entered a customer!", "Customer Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "You have not entered a customer!", "Customer Error",
+								JOptionPane.ERROR_MESSAGE);
 					}
 					int barcode = Integer.parseInt(table.getValueAt(intRows, 0).toString());
 
@@ -200,7 +202,8 @@ public class CreateSaleUI {
 							model.setValueAt(0, intRows, 3);
 							model.setValueAt(0, intRows, 4);
 						} else {
-							JOptionPane.showMessageDialog(null, "No product with that barcode!", "Barcode error!", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "No product with that barcode!", "Barcode error!",
+									JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
 						service = serviceCtr.findByBarcode(barcode);
@@ -210,7 +213,8 @@ public class CreateSaleUI {
 							model.setValueAt(0, intRows, 3);
 							model.setValueAt(0, intRows, 4);
 						} else {
-							JOptionPane.showMessageDialog(null, "No service with that barcode!", "Barcode error!", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "No service with that barcode!", "Barcode error!",
+									JOptionPane.ERROR_MESSAGE);
 						}
 					}
 				}
@@ -224,9 +228,11 @@ public class CreateSaleUI {
 								model.setValueAt(product.getSellingPrice(), intRows, 2);
 							}
 						} else {
-							product = productCtr.findByBarcode(Integer.parseInt(table.getValueAt(intRows, 0).toString()));
-							JOptionPane.showMessageDialog(null, "The typed amount is not available! \n You have " + product.getAmount() + " from "
-									+ product.getName() + "!", "Amount error!", JOptionPane.ERROR_MESSAGE);
+							product = productCtr.findByBarcode(Integer
+									.parseInt(table.getValueAt(intRows, 0).toString()));
+							JOptionPane.showMessageDialog(null, "The typed amount is not available! \n You have "
+									+ product.getAmount() + " from " + product.getName() + "!", "Amount error!",
+									JOptionPane.ERROR_MESSAGE);
 							table.setValueAt(0, intRows, 3);
 						}
 					}
@@ -255,7 +261,8 @@ public class CreateSaleUI {
 				int saleId = 0;
 				try {
 					if (textFieldCustomer.getText().equals("")) {
-						JOptionPane.showMessageDialog(null, "You have not entered a customer!", "Customer error!", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "You have not entered a customer!", "Customer error!",
+								JOptionPane.ERROR_MESSAGE);
 					} else {
 						saleId = saleCtr.insertSale(Integer.parseInt(textFieldCustomer.getText().toString()),
 								Double.parseDouble(textFieldPrice.getText().toString()));
@@ -268,12 +275,6 @@ public class CreateSaleUI {
 
 				table.selectAll();
 				int[] vals = table.getSelectedRows();
-				String products = "";
-				products+= "\n#####################\n";
-				products+= "Sale Id:" + saleId + "\nCustomer Id:" + textFieldCustomer.getText();
-						
-						//+"\nEployee Id:" + saleCtr.findById(saleId).get ;
-				products+= "\n#####################\n";
 				for (int i = 0; i < vals.length; i++) {
 					for (int x = 0; x < table.getColumnCount(); x++) {
 						functionalityCtr.addValue(table.getValueAt(i, x).toString());
@@ -281,26 +282,16 @@ public class CreateSaleUI {
 
 					try {
 						ArrayList<String> values = functionalityCtr.getValues();
-						saleCtr.insertPartSale(saleId, Integer.parseInt(values.get(0)), values.get(1), Double.parseDouble(values.get(2)),
-								Integer.parseInt(values.get(3)), Double.parseDouble(values.get(4)));
+						saleCtr.insertPartSale(saleId, Integer.parseInt(values.get(0)), values.get(1),
+								Double.parseDouble(values.get(2)), Integer.parseInt(values.get(3)),
+								Double.parseDouble(values.get(4)));
 
-						products += "Barcode: " + (values.get(0)) + "     Name: " + values.get(1) + "     Price/pc: " + Double.parseDouble(values.get(2))
-								+ "     Quantity: " + Integer.parseInt(values.get(3)) + "     Total: " + Double.parseDouble(values.get(4)) + "\n";
-
-					
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
 					functionalityCtr.removeAllValues();
-					
 				}
-				products+= "\n\n";
-				products+= "Personal discount:"+customerCtr.findById(Integer.parseInt(textFieldCustomer.getText())).getDiscount() +"% \n";
-				products+="TOTAL: " + textFieldPrice.getText() + "DKK";
-				Sale trySale = saleCtr.findById(saleId);
-				if (trySale != null) {
-					JOptionPane.showMessageDialog(null, "Sale submitted!\n" + products, "Sale confirmation!", JOptionPane.INFORMATION_MESSAGE);
-				}
+
 			}
 		});
 		btnSubmit.setBounds(738, 355, 89, 23);

@@ -43,10 +43,10 @@ public class AddServiceUI {
 	}
 	
 	void make(){
-		
-		
-		functionalityCtr.removeAllClicks();
+		contentPanel.removeAll();
+
 		functionalityCtr.removeAllIds();
+		functionalityCtr.removeAllClicks();
 
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));

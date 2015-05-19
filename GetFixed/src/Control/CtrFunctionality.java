@@ -7,6 +7,7 @@ public class CtrFunctionality {
 	private int clicks = 0;
 	private ArrayList<String> values = new ArrayList<String>();
 	private ArrayList<String> saleId = new ArrayList<String>();
+	private ArrayList<String> leaseId = new ArrayList<String>();
 	private boolean product;
 
 	public CtrFunctionality() {
@@ -79,5 +80,13 @@ public class CtrFunctionality {
 
 	public void setSaleId(ArrayList<String> saleId) {
 		this.saleId = saleId;
+	}
+
+	public ArrayList<String> getLeaseId() {
+		return leaseId;
+	}
+
+	public void setLeaseId(ArrayList<String> leaseId) {
+		this.leaseId = leaseId;
 	}
 }

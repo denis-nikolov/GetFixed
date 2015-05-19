@@ -18,25 +18,15 @@ public class DBPartSale implements IFDBPartSale {
 
 	@Override
 	public ArrayList<PartSale> getAllPartSaleBySaleId(int saleId, boolean retriveAssociation) {
-		return misaleCtrWhere("saleId="+saleId, retriveAssociation);
+		return misaleCtrWhere("saleId=" + saleId, retriveAssociation);
 	}
-	//ÃŒ∆≈ ƒ¿ —≈ Õ”∆ƒ¿≈ Œ“ œ–ŒÃ≈Õ»
+	// ÃŒ∆≈ ƒ¿ —≈ Õ”∆ƒ¿≈ Œ“ œ–ŒÃ≈Õ»
 	@Override
 	public int insertPartSale(PartSale part) throws Exception {
 		int rc = -1;
 		String query = "INSERT INTO PartSale(saleId, barcode, name, pricePerPiece, amount, price)  VALUES('"
-				+ part.getSale().getId()
-				+ "','"
-				+ part.getBarcode()
-				+ "','"
-				+ part.getName()
-				+ "','"
-				+ part.getPricePerPiece()
-				+ "','"
-				+ part.getAmount()
-				+ "','"
-				+ part.getPrice()
-				+ "')";
+				+ part.getSale().getId() + "','" + part.getBarcode() + "','" + part.getName() + "','"
+				+ part.getPricePerPiece() + "','" + part.getAmount() + "','" + part.getPrice() + "')";
 
 		System.out.println("insert : " + query);
 		try {
@@ -44,7 +34,7 @@ public class DBPartSale implements IFDBPartSale {
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate(query);
 			stmt.close();
-		}// end try
+		}
 		catch (SQLException ex) {
 			System.out.println("part is not inserted correct");
 			throw new Exception("part is not inserted correct");
@@ -52,14 +42,13 @@ public class DBPartSale implements IFDBPartSale {
 		return (rc);
 	}
 
-	private ArrayList<PartSale> misaleCtrWhere(String wClause,
-			boolean retrieveAssociation) {
+	private ArrayList<PartSale> misaleCtrWhere(String wClause, boolean retrieveAssociation) {
 		ResultSet results;
 		ArrayList<PartSale> list = new ArrayList<PartSale>();
 
 		String query = buildQuery(wClause);
 
-		try { 
+		try {
 			Statement stmt = con.createStatement();
 			stmt.setQueryTimeout(5);
 			results = stmt.executeQuery(query);
@@ -70,7 +59,8 @@ public class DBPartSale implements IFDBPartSale {
 				list.add(partObj);
 			}
 			stmt.close();
-			// if (retrieveAssociation) { // The partervisor and department is to
+			// if (retrieveAssociation) { // The partervisor and department is
+			// to
 			// be
 			// // build as well
 			// for (PartSale partObj : list) {
@@ -118,7 +108,7 @@ public class DBPartSale implements IFDBPartSale {
 
 		String query = buildQuery(wClause);
 		System.out.println(query);
-		try { 
+		try {
 			Statement stmt = con.createStatement();
 			stmt.setQueryTimeout(5);
 			results = stmt.executeQuery(query);
@@ -127,11 +117,10 @@ public class DBPartSale implements IFDBPartSale {
 				partObj = buildPartSale(results);
 				stmt.close();
 
-			} else { 
+			} else {
 				partObj = null;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println("Query exception: " + e);
 		}
 		return partObj;
@@ -143,13 +132,12 @@ public class DBPartSale implements IFDBPartSale {
 
 		String query = "DELETE FROM PartSale WHERE saleId = '" + saleId + "'";
 		System.out.println(query);
-		try { 
+		try {
 			Statement stmt = con.createStatement();
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate(query);
 			stmt.close();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			System.out.println("Delete exception in partSale db: " + ex);
 		}
 		return (rc);

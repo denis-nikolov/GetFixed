@@ -39,12 +39,10 @@ public class CtrProduct {
 
 	public Product findByBarcodeAndDepartmentId(int barcode, int departmentId) {
 		IFDBProduct dbProduct = new DBProduct();
-		return dbProduct.searchProductByBarcodeAndDepartmentId(barcode,
-				departmentId, true);
+		return dbProduct.searchProductByBarcodeAndDepartmentId(barcode, departmentId, true);
 	}
 
-	public Product findByBarcodeAndDepartmentLocation(int barcode,
-			String departmentLocation) {
+	public Product findByBarcodeAndDepartmentLocation(int barcode, String departmentLocation) {
 		int departmentId = 0;
 		if (departmentLocation.equals("Aalborg")) {
 			departmentId = 1;
@@ -58,56 +56,76 @@ public class CtrProduct {
 		Product product = findByBarcodeAndDepartmentId(barcode, departmentId);
 		return product;
 	}
-	
-	public boolean isAmountAvailable(int amount, Product product){
-		if(product.getAmount() >= amount){
+
+	public boolean isAmountAvailable(int amount, Product product) {
+		if (product.getAmount() >= amount) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	public boolean isDiscount(int amount, Product product){
-		if(amount >= product.getAmountForDiscount()){
+
+	public boolean isDiscount(int amount, Product product) {
+		if (amount >= product.getAmountForDiscount()) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	public boolean isAvailable(int barcode){
-		if(findByBarcode(barcode) != null){
+
+	public boolean isAvailable(int barcode) {
+		if (findByBarcode(barcode) != null) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	public int recalculateProAmount(int barcode, int amount){
+
+	public boolean isLeasable(Product product) {
+		if (product.getLeasingPrice() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public int recalculateProAmount(int barcode, int amount) {
 		IFDBProduct dbProduct = new DBProduct();
-		
+
 		Product product = new Product();
 		product = findByBarcode(barcode);
-		
+
 		int newAmount = (product.getAmount() - amount);
 		product.setAmount(newAmount);
-        
-        if(product.getAmount() < product.getMinAmount()){
-        	double price = (product.getOrderingPrice() * product.getOrderAmount());
-        	int orderAmount = (product.getMaxAmount() - product.getAmount()) - product.getOrderAmount();
-        	
-        	CtrOrder orderCtr = new CtrOrder();
-        	orderCtr.insertOrder(barcode, product.getName(),  product.getOrderingPrice(),  orderAmount,  price);
-        	
-        	product.setOrderAmount(product.getMaxAmount() - product.getAmount());
-        }
+		if (!isLeasable(product)) {
+			if (product.getAmount() < product.getMinAmount()) {
+				double price = (product.getOrderingPrice() * product.getOrderAmount());
+				int orderAmount = (product.getMaxAmount() - product.getAmount()) - product.getOrderAmount();
+
+				CtrOrder orderCtr = new CtrOrder();
+				orderCtr.insertOrder(barcode, product.getName(), product.getOrderingPrice(), orderAmount, price);
+
+				product.setOrderAmount(product.getMaxAmount() - product.getAmount());
+			}
+		}
+		return dbProduct.recalculateProductAmount(product);
+	}
+	
+	public int returnProduct(int barcode, int amount){
+		IFDBProduct dbProduct = new DBProduct();
+
+		Product product = new Product();
+		product = findByBarcode(barcode);
+
+		int newAmount = (product.getAmount() + amount);
+		product.setAmount(newAmount);
+		
 		return dbProduct.recalculateProductAmount(product);
 	}
 
-	public int updateProduct(int barcode, String name, double sellingPrice,
-			double leasingPrice, double orderingPrice, double priceForDiscount,
-			int amountForDiscount, int amount, int minAmount, int maxAmount,
-			int orderAmount, int supplierId) {
+	public int updateProduct(int barcode, String name, double sellingPrice, double leasingPrice, double orderingPrice,
+			double priceForDiscount, int amountForDiscount, int amount, int minAmount, int maxAmount, int orderAmount,
+			int supplierId) {
 
 		IFDBProduct dbProduct = new DBProduct();
 		Product product = new Product();
@@ -128,10 +146,9 @@ public class CtrProduct {
 
 	}
 
-	public void insertProduct(int barcode, String name, double sellingPrice,
-			double leasingPrice, double orderingPrice, double priceForDiscount,
-			int amountForDiscount, int amount, int minAmount, int maxAmount,
-			int orderAmount, int departmentId, int supplierId) throws Exception {
+	public void insertProduct(int barcode, String name, double sellingPrice, double leasingPrice, double orderingPrice,
+			double priceForDiscount, int amountForDiscount, int amount, int minAmount, int maxAmount, int orderAmount,
+			int departmentId, int supplierId) throws Exception {
 		Product product = new Product();
 		product.setBarcode(barcode);
 		product.setName(name);
@@ -175,13 +192,10 @@ public class CtrProduct {
 		Object[] object = null;
 		ArrayList<Object[]> objectArray = new ArrayList<Object[]>();
 		for (Product product : productList) {
-			object = new Object[] { product.getBarcode(), product.getName(),
-					product.getSellingPrice(), product.getLeasingPrice(),
-					product.getOrderingPrice(), product.getPriceForDiscount(),
-					product.getAmountForDiscount(), product.getAmount(),
-					product.getMinAmount(), product.getMaxAmount(),
-					product.getOrderAmount(),
-					product.getDepartment().getLocation(),
+			object = new Object[] { product.getBarcode(), product.getName(), product.getSellingPrice(),
+					product.getLeasingPrice(), product.getOrderingPrice(), product.getPriceForDiscount(),
+					product.getAmountForDiscount(), product.getAmount(), product.getMinAmount(),
+					product.getMaxAmount(), product.getOrderAmount(), product.getDepartment().getLocation(),
 					product.getSupplier().getId() };
 			objectArray.add(object);
 		}
@@ -193,13 +207,10 @@ public class CtrProduct {
 		Object[] object = null;
 		ArrayList<Object[]> objectArray = new ArrayList<Object[]>();
 		for (Product product : productList) {
-			object = new Object[] { product.getBarcode(), product.getName(),
-					product.getSellingPrice(), product.getLeasingPrice(),
-					product.getOrderingPrice(), product.getPriceForDiscount(),
-					product.getAmountForDiscount(), product.getAmount(),
-					product.getMinAmount(), product.getMaxAmount(),
-					product.getOrderAmount(),
-					product.getDepartment().getLocation(),
+			object = new Object[] { product.getBarcode(), product.getName(), product.getSellingPrice(),
+					product.getLeasingPrice(), product.getOrderingPrice(), product.getPriceForDiscount(),
+					product.getAmountForDiscount(), product.getAmount(), product.getMinAmount(),
+					product.getMaxAmount(), product.getOrderAmount(), product.getDepartment().getLocation(),
 					product.getSupplier().getId() };
 			objectArray.add(object);
 		}
@@ -209,14 +220,10 @@ public class CtrProduct {
 	public Object[] addProductByBarcode(int barcode) {
 		Product product = findByBarcode(barcode);
 		Object[] object = null;
-		object = new Object[] { product.getBarcode(), product.getName(),
-				product.getSellingPrice(), product.getLeasingPrice(),
-				product.getOrderingPrice(), product.getPriceForDiscount(),
-				product.getAmountForDiscount(), product.getAmount(),
-				product.getMinAmount(), product.getMaxAmount(),
-				product.getOrderAmount(),
-				product.getDepartment().getLocation(),
-				product.getSupplier().getId() };
+		object = new Object[] { product.getBarcode(), product.getName(), product.getSellingPrice(),
+				product.getLeasingPrice(), product.getOrderingPrice(), product.getPriceForDiscount(),
+				product.getAmountForDiscount(), product.getAmount(), product.getMinAmount(), product.getMaxAmount(),
+				product.getOrderAmount(), product.getDepartment().getLocation(), product.getSupplier().getId() };
 
 		return object;
 	}
@@ -224,14 +231,10 @@ public class CtrProduct {
 	public Object[] addProductByName(String name) {
 		Product product = findByName(name);
 		Object[] object = null;
-		object = new Object[] { product.getBarcode(), product.getName(),
-				product.getSellingPrice(), product.getLeasingPrice(),
-				product.getOrderingPrice(), product.getPriceForDiscount(),
-				product.getAmountForDiscount(), product.getAmount(),
-				product.getMinAmount(), product.getMaxAmount(),
-				product.getOrderAmount(),
-				product.getDepartment().getLocation(),
-				product.getSupplier().getId() };
+		object = new Object[] { product.getBarcode(), product.getName(), product.getSellingPrice(),
+				product.getLeasingPrice(), product.getOrderingPrice(), product.getPriceForDiscount(),
+				product.getAmountForDiscount(), product.getAmount(), product.getMinAmount(), product.getMaxAmount(),
+				product.getOrderAmount(), product.getDepartment().getLocation(), product.getSupplier().getId() };
 
 		return object;
 	}

@@ -25,19 +25,6 @@ public class MainUI extends JFrame {
 	private JPanel mainMenuPanel;
 	private JPanel secondaryMenuPanel;
 	private JPanel contentPanel;
-	private JTable table;
-	private JTextField txtSearch;
-	CtrProduct productCtr = new CtrProduct();
-	CtrDepartment departmentCtr = new CtrDepartment();
-	CtrSupplier supplierCtr = new CtrSupplier();
-	CtrEmployee employeeCtr = new CtrEmployee();
-	CtrCustomer customerCtr = new CtrCustomer();
-	CtrService serviceCtr = new CtrService();
-	CtrFunctionality functionalityCtr = new CtrFunctionality();
-	CtrSale saleCtr = new CtrSale();
-	CtrOrder orderCtr = new CtrOrder();
-	Department department = new Department();
-	ArrayList<String> saleID = new ArrayList<>();
 
 	/**
 	 * Launch the application.
@@ -142,12 +129,33 @@ public class MainUI extends JFrame {
 
 				JButton btnStartLease = new JButton("Start lease");
 				secondaryMenuPanel.add(btnStartLease);
+				btnStartLease.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						contentPanel.removeAll();
+						StartLeaseUI startLeaseUi = new StartLeaseUI(contentPanel, secondaryMenuPanel);
+						startLeaseUi.make();
+					}
+				});
 
 				JButton btnShowLease = new JButton("Show lease");
 				secondaryMenuPanel.add(btnShowLease);
+				btnShowLease.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						contentPanel.removeAll();
+						ShowLeaseUI showLeaseUi = new ShowLeaseUI(contentPanel, secondaryMenuPanel, btnShowLease);
+						showLeaseUi.make();
+					}
+				});
 
 				JButton btnEndLease = new JButton("End lease");
 				secondaryMenuPanel.add(btnEndLease);
+				btnEndLease.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						contentPanel.removeAll();
+						EndLeaseUI endLeaseUi = new EndLeaseUI(contentPanel, secondaryMenuPanel, btnEndLease);
+						endLeaseUi.make();
+					}
+				});
 
 				invalidate();
 				revalidate();
@@ -220,7 +228,8 @@ public class MainUI extends JFrame {
 
 						contentPanel.removeAll();
 
-						ShowProductUI shwoProductUI = new ShowProductUI(contentPanel, secondaryMenuPanel, btnShowProducts);
+						ShowProductUI shwoProductUI = new ShowProductUI(contentPanel, secondaryMenuPanel,
+								btnShowProducts);
 						shwoProductUI.make();
 					}
 				});
@@ -261,7 +270,8 @@ public class MainUI extends JFrame {
 				btnShowService.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						contentPanel.removeAll();
-						ShowServiceUI showServiceUI = new ShowServiceUI(contentPanel, secondaryMenuPanel, btnShowService);
+						ShowServiceUI showServiceUI = new ShowServiceUI(contentPanel, secondaryMenuPanel,
+								btnShowService);
 						showServiceUI.make();
 					}
 				});
@@ -304,7 +314,8 @@ public class MainUI extends JFrame {
 
 						contentPanel.removeAll();
 
-						ShowCustomerUI showCustomerUI = new ShowCustomerUI(contentPanel, secondaryMenuPanel, btnShowCustomer);
+						ShowCustomerUI showCustomerUI = new ShowCustomerUI(contentPanel, secondaryMenuPanel,
+								btnShowCustomer);
 						showCustomerUI.make();
 
 					}
@@ -346,7 +357,8 @@ public class MainUI extends JFrame {
 				btnShowEmployee.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						contentPanel.removeAll();
-						ShowEmployeeUI showEmployeeUI = new ShowEmployeeUI(contentPanel, secondaryMenuPanel, btnAddEmployee);
+						ShowEmployeeUI showEmployeeUI = new ShowEmployeeUI(contentPanel, secondaryMenuPanel,
+								btnAddEmployee);
 						showEmployeeUI.make();
 
 					}
@@ -367,59 +379,10 @@ public class MainUI extends JFrame {
 		// //////////////////////////////////////////////////////
 
 		JButton btnStatistics = new JButton("Statictics");
-		btnStatistics.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				secondaryMenuPanel.removeAll();
-
-				JButton btnShowProducts = new JButton("Show top 5 products");
-				secondaryMenuPanel.add(btnShowProducts);
-				btnShowProducts.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-						
-						StatisticsUI s = new StatisticsUI(contentPanel, secondaryMenuPanel);
-						s.makeMostSoldProduct();
-
-					}
-				});
-				
-				JButton btnShowServices= new JButton("Show top 5 services");
-				secondaryMenuPanel.add(btnShowServices);
-				btnShowServices.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-						
-						StatisticsUI s = new StatisticsUI(contentPanel, secondaryMenuPanel);
-						s.makeMostSoldService();
-
-					}
-				});
-				
-				invalidate();
-				revalidate();
-				repaint();
-				setVisible(true);
-			}
-		});
 		mainMenuPanel.add(btnStatistics);
 
-		// ////////////////////////////////////////////////////////
-		// ////////////////////////////////////////////////////////
-		// /////////////////LOGOUT/////////////////////////////////
-		// ///////////////////////////////////////////////////////
-		// //////////////////////////////////////////////////////
 		JButton btnLogout = new JButton("Logout");
-		btnLogout.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				dispose();
-				AccessUI frame = new AccessUI();
-				frame.setVisible(true);
-
-			}
-		});
 		mainMenuPanel.add(btnLogout);
 
 	}
-
 }

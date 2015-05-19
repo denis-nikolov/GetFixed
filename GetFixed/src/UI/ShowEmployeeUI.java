@@ -51,6 +51,8 @@ public class ShowEmployeeUI {
 	
 	
 	void make(){
+		contentPanel.removeAll();
+
 		functionalityCtr.removeAllIds();
 		functionalityCtr.removeAllClicks();
 

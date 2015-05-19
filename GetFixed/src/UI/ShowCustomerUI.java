@@ -31,6 +31,8 @@ public class ShowCustomerUI {
 	}
 
 	void make() {
+		contentPanel.removeAll();
+
 		functionalityCtr.removeAllIds();
 		functionalityCtr.removeAllClicks();
 
