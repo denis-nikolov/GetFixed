@@ -32,11 +32,9 @@ public class AddCustomerUI {
 
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		table.setModel(new DefaultTableModel(new Object[][] { { null, null,
-				null, null, null } }, new String[] { "Name", "Surname",
-				"Telephone", "E-mail", "Discount(%)" }) {
-			Class[] columnTypes = new Class[] { String.class, String.class,
-					String.class, String.class, Integer.class };
+		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null } }, new String[] { "Name", "Surname", "Telephone",
+				"E-mail", "Discount(%)" }) {
+			Class[] columnTypes = new Class[] { String.class, String.class, String.class, String.class, Integer.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
@@ -90,9 +88,7 @@ public class AddCustomerUI {
 					}
 
 					try {
-						customerCtr.insertCustomer(values.get(0),
-								values.get(1), values.get(2), values.get(3),
-								Integer.parseInt(values.get(4)));
+						customerCtr.insertCustomer(values.get(0), values.get(1), values.get(2), values.get(3), Integer.parseInt(values.get(4)));
 
 					} catch (Exception e1) {
 						e1.printStackTrace();
@@ -102,7 +98,7 @@ public class AddCustomerUI {
 
 			}
 		});
-		btnSubmit.setBounds(530, 355, 89, 23);
+		btnSubmit.setBounds(738, 355, 89, 23);
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();

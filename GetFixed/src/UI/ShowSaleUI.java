@@ -47,7 +47,6 @@ public class ShowSaleUI {
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
 	CtrSale saleCtr = new CtrSale();
 	CtrOrder orderCtr = new CtrOrder();
-	ArrayList<String> saleID = new ArrayList<>();
 	JButton btnShowSale = new JButton();
 	
 	
@@ -139,30 +138,30 @@ public class ShowSaleUI {
 	});
 	contentPanel.add(btnSearch);
 
-//	JButton btnShowProducts = new JButton("Show items");
-//	btnShowProducts.setBounds(705, 11, 120, 25);
-//	btnShowProducts.addActionListener(new ActionListener() {
-//		public void actionPerformed(ActionEvent e) {
-//
-//			for (int index = 0; index < saleID.size(); index++) {
-//				saleID.remove(index);
-//			}
-//
-//			int[] vals = table.getSelectedRows();
-//			for (int i : vals) {
-//				saleID.add(table.getValueAt(i, 0)
-//						.toString());
-//			}
-//
-//			Table frame = new Table();
-//			frame.pack();
-//			frame.setBounds(200, 200, 500, 250);
-//			frame.setTitle("Products in sales");
-//			frame.setVisible(true);
-//
-//		}
-//	});
-//	contentPanel.add(btnShowProducts);
+	JButton btnShowProducts = new JButton("Show items");
+	btnShowProducts.setBounds(705, 11, 120, 25);
+	btnShowProducts.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+
+			for (int index = 0; index < functionalityCtr.getSaleId().size(); index++) {
+				functionalityCtr.getSaleId().remove(index);
+			}
+
+			int[] vals = table.getSelectedRows();
+			for (int i : vals) {
+				functionalityCtr.getSaleId().add(table.getValueAt(i, 0)
+						.toString());
+			}
+
+			ShowItemsInSaleUI frame = new ShowItemsInSaleUI(functionalityCtr);
+			frame.pack();
+			frame.setBounds(200, 200, 500, 250);
+			frame.setTitle("Products in sales");
+			frame.setVisible(true);
+
+		}
+	});
+	contentPanel.add(btnShowProducts);
 
 	JButton btnDelete = new JButton("Delete");
 	btnDelete.addActionListener(new ActionListener() {

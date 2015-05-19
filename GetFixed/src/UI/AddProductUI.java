@@ -187,7 +187,8 @@ public class AddProductUI {
 
 			}
 		});
-		btnSubmit.setBounds(530, 355, 89, 23);
+		btnSubmit.setBounds(738, 355, 89, 23);
+		
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();
