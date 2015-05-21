@@ -17,9 +17,9 @@ public class CtrDepartment {
 		return allDepartment;
 	}
 
-	public Department findByLocation(String location) {
+	public Department findByName(String name) {
 		IFDBDepartment dbDepartment = new DBDepartment();
-		return dbDepartment.searchDepartmentByLocation(location, true);
+		return dbDepartment.searchDepartmentByLocation(name, true);
 	}
 
 	public Department findById(int id) {
@@ -42,10 +42,9 @@ public class CtrDepartment {
 
 	}
 
-	public void insertDepartment(int id,String name, String address, String location,
+	public void insertDepartment(String name, String address, String location,
 			String telephone, String email) throws Exception {
 		Department department = new Department();
-		department.setId(id);
 		department.setName(name);
 		department.setAddress(address);
 		department.setLocation(location);
@@ -64,6 +63,7 @@ public class CtrDepartment {
 	}
 
 	public void deleteDepartment(int id) throws Exception {
+
 		try {
 			DBConnection.startTransaction();
 			DBDepartment dbDepartment = new DBDepartment();
@@ -73,41 +73,6 @@ public class CtrDepartment {
 			DBConnection.rollbackTransaction();
 			throw new Exception("Department not deleted");
 		}
-	}
-	
-	public Object[] addDepartmentById(int id) {
-		Department department = findById(id);
-		Object[] object = null;
-		object = new Object[] { department.getId(), department.getName(),
-				 department.getAddress(), department.getLocation(),
-				department.getTelephone(), department.getEmail()};
-
-		return object;
-	}
-
-	public Object[] addDepartmentByName(String name) {
-		Department department = findByLocation(name);
-		Object[] object = null;
-		object = new Object[] { department.getId(), department.getName(),
-				 department.getAddress(),department.getLocation(),
-				department.getTelephone(), department.getEmail()
-				 };
-
-		return object;
-	}
-
-	
-	public ArrayList<Object[]> addAllDepartments() {
-		ArrayList<Department> departmentList = findAllDepartments();
-		Object[] object = null;
-		ArrayList<Object[]> objectArray = new ArrayList<Object[]>();
-		for (Department department : departmentList) {
-			object = new Object[] { department.getId(), department.getName(),
-					 department.getAddress(),department.getLocation(),
-					department.getTelephone(), department.getEmail()};
-			objectArray.add(object);
-		}
-		return objectArray;
 	}
 
 }

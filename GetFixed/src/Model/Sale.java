@@ -8,16 +8,18 @@ public class Sale {
 	private int id;
 	private String date;
 	private Customer customer;
+	private Department department;
 	private double totalPrice;
 
 	public Sale() {
 
 	}
 
-	public Sale(int id, Customer customer) {
+	public Sale(int id, Customer customer, Department department) {
 		this.id = id;
 		date = createDate();
 		this.customer = customer;
+		this.department = department;
 		totalPrice = getTotalPrice();
 	}
 
@@ -58,5 +60,13 @@ public class Sale {
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+
+	public Department getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
 }

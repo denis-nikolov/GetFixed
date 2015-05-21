@@ -18,7 +18,7 @@ public class DBPartLease implements IFDBPartLease {
 
 	@Override
 	public ArrayList<PartLease> getAllPartLeaseByLeaseId(int leaseId, boolean retriveAssociation) {
-		return mileaseCtrWhere("leaseId=" + leaseId, retriveAssociation);
+		return miscWhere("leaseId=" + leaseId, retriveAssociation);
 	}
 
 	// ÌÎÆÅ ÄÀ ÑÅ ÍÓÆÄÀÅ ÎÒ ÏĞÎÌÅÍÈ
@@ -43,7 +43,7 @@ public class DBPartLease implements IFDBPartLease {
 		return (rc);
 	}
 
-	private ArrayList<PartLease> mileaseCtrWhere(String wClause, boolean retrieveAssociation) {
+	private ArrayList<PartLease> miscWhere(String wClause, boolean retrieveAssociation) {
 		ResultSet results;
 		ArrayList<PartLease> list = new ArrayList<PartLease>();
 

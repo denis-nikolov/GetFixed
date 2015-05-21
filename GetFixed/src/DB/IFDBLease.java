@@ -6,6 +6,8 @@ import java.util.ArrayList;
 public interface IFDBLease {
 
 	public ArrayList<Lease> getAllLease(boolean retriveAssociation);
+	
+	public ArrayList<Lease> findAllLeasesByDepartmentId(int departmentId, boolean retriveAssociation);
 
     public Lease searchLeaseId( int id, boolean retriveAssociation);
 

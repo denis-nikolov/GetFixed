@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
-import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -20,6 +19,7 @@ public class StartLeaseUI {
 	CtrProduct productCtr = new CtrProduct();
 	CtrCustomer customerCtr = new CtrCustomer();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
+	CtrDepartment departmentCtr = new CtrDepartment();
 	CtrLease leaseCtr = new CtrLease();
 
 	StartLeaseUI(JPanel contentPanel, JPanel secondaryMenuPanel) {
@@ -31,9 +31,9 @@ public class StartLeaseUI {
 	void make() {
 		functionalityCtr.removeAllIds();
 		functionalityCtr.removeAllClicks();
-		
+
 		contentPanel.removeAll();
-		
+
 		table = new JTable();
 
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -59,6 +59,73 @@ public class StartLeaseUI {
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+		JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
+		JRadioButton rdbtnAarhus = new JRadioButton("Aarhus");
+		JRadioButton rdbtnOdense = new JRadioButton("Odense");
+		JRadioButton rdbtnCopenhagen = new JRadioButton("Copenhagen");
+		
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(rdbtnAalborg);
+		buttonGroup.add(rdbtnAarhus);
+		buttonGroup.add(rdbtnOdense);
+		buttonGroup.add(rdbtnCopenhagen);
+
+		rdbtnAalborg.setBounds(22, 355, 109, 23);
+		rdbtnAalborg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String department = rdbtnAalborg.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+				if (rdbtnAalborg.isSelected()) {
+					functionalityCtr.setDepartmentId(departmentId);
+				} else {
+					functionalityCtr.setDepartmentId(0);
+				}
+			}
+		});
+		contentPanel.add(rdbtnAalborg);
+
+		rdbtnAarhus.setBounds(133, 355, 109, 23);
+		rdbtnAarhus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String department = rdbtnAarhus.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+				if (rdbtnAarhus.isSelected()) {
+					functionalityCtr.setDepartmentId(departmentId);
+				} else {
+					functionalityCtr.setDepartmentId(0);
+				}
+			}
+		});
+		contentPanel.add(rdbtnAarhus);
+
+		rdbtnOdense.setBounds(244, 355, 109, 23);
+		rdbtnOdense.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String department = rdbtnOdense.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+				if (rdbtnOdense.isSelected()) {
+					functionalityCtr.setDepartmentId(departmentId);
+				} else {
+					functionalityCtr.setDepartmentId(0);
+				}
+			}
+		});
+		contentPanel.add(rdbtnOdense);
+
+		rdbtnCopenhagen.setBounds(355, 355, 109, 23);
+		rdbtnCopenhagen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String department = rdbtnCopenhagen.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+				if (rdbtnCopenhagen.isSelected()) {
+					functionalityCtr.setDepartmentId(departmentId);
+				} else {
+					functionalityCtr.setDepartmentId(0);
+				}
+			}
+		});
+		contentPanel.add(rdbtnCopenhagen);
 
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
@@ -241,8 +308,8 @@ public class StartLeaseUI {
 					} else {
 						leaseId = leaseCtr.insertLease(Integer.parseInt(textFieldCustomer.getText().toString()),
 								Integer.parseInt(textFieldPeriod.getText().toString()),
+								functionalityCtr.getDepartmentId(),
 								Double.parseDouble(textFieldPrice.getText().toString()));
-						// ic.insertInvoice(leaseId);
 					}
 
 				} catch (Exception e1) {

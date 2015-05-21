@@ -10,7 +10,7 @@ public class CtrLease {
 
 	CtrCustomer customerCtr = new CtrCustomer();
 	CtrProduct productCtr = new CtrProduct();
-	CtrFunctionality funcionalityCtr = new CtrFunctionality();
+	CtrDepartment departmentCtr = new CtrDepartment();
 
 	/** Creates a new instance of CtrLease */
 	public CtrLease() {
@@ -24,15 +24,23 @@ public class CtrLease {
 		return allLease;
 	}
 
+	public ArrayList<Lease> findAllLeasesByDepartmentId(int departmentId) {
+		IFDBLease dbLease = new DBLease();
+		ArrayList<Lease> allLease = new ArrayList<Lease>();
+		allLease = dbLease.findAllLeasesByDepartmentId(departmentId, false);
+		return allLease;
+	}
+
 	public Lease findById(int id) {
 		IFDBLease dbLease = new DBLease();
 		return dbLease.searchLeaseId(id, true);
 	}
 
-	public int insertLease(int customerId, int period, double price) throws Exception {
+	public int insertLease(int customerId, int period, int departmentId, double price) throws Exception {
 		Lease lease = new Lease();
 		lease.setCustomer(customerCtr.findById(customerId));
 		lease.setPeriod(period);
+		lease.setDepartment(departmentCtr.findById(departmentId));
 		lease.setPrice(price);
 
 		try {
@@ -71,8 +79,10 @@ public class CtrLease {
 		Lease lease = findById(id);
 
 		ArrayList<PartLease> part = findAllPartLeasesByLeaseId(id);
+		System.out.println("FindAll: " + findAllPartLeasesByLeaseId(id));
+		System.out.println("Size: " + part.size());
 		for (PartLease partLease : part) {
-			productCtr.returnProduct(partLease.getBarcode(), partLease.getAmount());
+			productCtr.returnProduct(partLease.getBarcode(), partLease.getAmount(), lease.getDepartment().getId());
 		}
 
 		lease.setReturned(true);
@@ -92,7 +102,7 @@ public class CtrLease {
 			dateOfLease = sdf.format(calendar.getTime());
 
 			Date currentDate = new Date();
-            Date date = sdf.parse(dateOfLease);
+			Date date = sdf.parse(dateOfLease);
 
 			if (date.before(currentDate)) {
 				return false;
@@ -106,7 +116,22 @@ public class CtrLease {
 	}
 
 	public void deleteLease(int id) throws Exception {
-
+		System.out.println("Lease ID: " + id);
+		
+		Lease lease = findById(id);
+		
+		System.out.println("Returned: " + lease.isReturned());
+		
+		if (!lease.isReturned()) {
+			ArrayList<PartLease> part = findAllPartLeasesByLeaseId(id);
+			System.out.println("FindAll: " + findAllPartLeasesByLeaseId(id));
+			System.out.println("Size: " + part.size());
+			for (PartLease partLease : part) {
+				System.out.println("Barcode: " + partLease.getBarcode() + " Amount: " + partLease.getAmount()
+						+ " DepartmentId: " + lease.getDepartment().getId());
+				productCtr.returnProduct(partLease.getBarcode(), partLease.getAmount(), lease.getDepartment().getId());
+			}
+		}
 		try {
 			DBConnection.startTransaction();
 			DBLease dbLease = new DBLease();
@@ -128,6 +153,9 @@ public class CtrLease {
 	public void insertPartLease(int leaseId, int barcode, String name, double pricePerPiece, int amount, double price)
 			throws Exception {
 		PartLease partLease = new PartLease();
+		Lease lease = findById(leaseId);
+		int departmentId = lease.getDepartment().getId();
+		System.out.println(departmentId);
 		partLease.setLease(findById(leaseId));
 		partLease.setBarcode(barcode);
 		partLease.setName(name);
@@ -139,7 +167,7 @@ public class CtrLease {
 			DBConnection.startTransaction();
 			DBPartLease dbPartLease = new DBPartLease();
 			dbPartLease.insertPartLease(partLease);
-			productCtr.recalculateProAmount(barcode, amount);
+			productCtr.recalculateProAmount(barcode, amount, departmentId);
 			DBConnection.commitTransaction();
 		} catch (Exception e) {
 			DBConnection.rollbackTransaction();
@@ -165,7 +193,7 @@ public class CtrLease {
 		ArrayList<Object[]> objectArray = new ArrayList<Object[]>();
 		for (Lease lease : leaseList) {
 			object = new Object[] { lease.getId(), lease.getDate(), lease.getCustomer().getId(), lease.getPeriod(),
-					lease.isReturned(), lease.getPrice() };
+					lease.isReturned(), lease.getDepartment().getName(), lease.getPrice() };
 			objectArray.add(object);
 		}
 		return objectArray;
@@ -175,7 +203,7 @@ public class CtrLease {
 		Lease lease = findById(id);
 		Object[] object = null;
 		object = new Object[] { lease.getId(), lease.getDate(), lease.getCustomer().getId(), lease.getPeriod(),
-				lease.isReturned(), lease.getPrice() };
+				lease.isReturned(), lease.getDepartment().getName(), lease.getPrice() };
 
 		return object;
 	}
@@ -187,9 +215,21 @@ public class CtrLease {
 		for (Lease lease : leaseList) {
 			if (!lease.isReturned()) {
 				object = new Object[] { lease.getId(), lease.getDate(), lease.getCustomer().getId(), lease.getPeriod(),
-						lease.isReturned(), lease.getPrice() };
+						lease.isReturned(), lease.getDepartment().getName(), lease.getPrice() };
 				objectArray.add(object);
 			}
+		}
+		return objectArray;
+	}
+
+	public ArrayList<Object[]> addAllLeasesForDepartment(int departmentId) {
+		ArrayList<Lease> leaseList = findAllLeasesByDepartmentId(departmentId);
+		Object[] object = null;
+		ArrayList<Object[]> objectArray = new ArrayList<Object[]>();
+		for (Lease lease : leaseList) {
+			object = new Object[] { lease.getId(), lease.getDate(), lease.getCustomer().getId(), lease.getPeriod(),
+					lease.isReturned(), lease.getDepartment().getName(), lease.getPrice() };
+			objectArray.add(object);
 		}
 		return objectArray;
 	}

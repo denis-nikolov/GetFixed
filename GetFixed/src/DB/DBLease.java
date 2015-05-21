@@ -1,6 +1,6 @@
 package DB;
 
-import Control.CtrCustomer;
+import Control.*;
 import Model.*;
 
 import java.sql.*;
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class DBLease implements IFDBLease {
 	private Connection con;
 	CtrCustomer cc = new CtrCustomer();
+	CtrDepartment departmentCtr = new CtrDepartment();
 
 	public DBLease() {
 		con = DBConnection.getInstance().getDBcon();
@@ -17,6 +18,12 @@ public class DBLease implements IFDBLease {
 	@Override
 	public ArrayList<Lease> getAllLease(boolean retriveAssociation) {
 		return miscWhere("", retriveAssociation);
+	}
+	
+	@Override
+	public ArrayList<Lease> findAllLeasesByDepartmentId(int departmentId,
+			boolean retriveAssociation) {
+		return miscWhere("departmentId="+departmentId, retriveAssociation);
 	}
 
 	@Override
@@ -33,9 +40,14 @@ public class DBLease implements IFDBLease {
 		System.out.println("next id = " + nextId);
 
 		int rc = -1;
-		String query = "INSERT INTO Lease(id, date, customerId, period, price, returned)  VALUES('" + nextId + "','"
-				+ lease.createDate() + "','" + lease.getCustomer().getId() + "','" + lease.getPeriod() + "','"
-				+ lease.getPrice() + "','" + lease.isReturned() + "')";
+		String query = "INSERT INTO Lease(id, date, customerId, period, returned, departmentId, price)  VALUES('"
+				+ nextId + "','"
+				+ lease.createDate() + "','"
+				+ lease.getCustomer().getId() + "','"
+				+ lease.getPeriod() + "','" 
+				+ lease.isReturned() + "','" 
+				+ lease.getDepartment().getId() + "','" 
+				+ lease.getPrice() + "')";
 
 		System.out.println("insert : " + query);
 		try {
@@ -49,25 +61,22 @@ public class DBLease implements IFDBLease {
 		}
 		return nextId;
 	}
-	
+
 	@Override
-	public int endLease(Lease lease){
+	public int endLease(Lease lease) {
 		Lease leaseObj = lease;
 		int rc = -1;
 
-		String query = "UPDATE Lease SET " 
-		        + "returned ='" + leaseObj.isReturned()
-				+ "' " + " WHERE id = '" + leaseObj.getId() 
-				+ "'";
+		String query = "UPDATE Lease SET " + "returned ='" + leaseObj.isReturned() + "' " + " WHERE id = '"
+				+ leaseObj.getId() + "'";
 		System.out.println("Update query:" + query);
-		try { 
+		try {
 			Statement stmt = con.createStatement();
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate(query);
 
 			stmt.close();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			System.out.println("Update exception in Lease db: " + ex);
 		}
 		return (rc);
@@ -141,8 +150,9 @@ public class DBLease implements IFDBLease {
 			leaseObj.setDate(results.getString("date"));
 			leaseObj.setCustomer(cc.findById(results.getInt("customerId")));
 			leaseObj.setPeriod(results.getInt("period"));
-			leaseObj.setPrice(results.getInt("price"));
 			leaseObj.setReturned(results.getBoolean("returned"));
+			leaseObj.setDepartment(departmentCtr.findById(results.getInt("departmentId")));
+			leaseObj.setPrice(results.getInt("price"));
 		} catch (Exception e) {
 			System.out.println("error in building the Lease object");
 		}

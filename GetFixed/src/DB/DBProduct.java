@@ -50,11 +50,9 @@ public class DBProduct implements IFDBProduct {
 		Product proObj = pro;
 		int rc = -1;
 		String query = "UPDATE Product SET "
-				+ "amount ='" + proObj.getAmount()
-				+ "', "
-				+ "orderAmount ='" + proObj.getOrderAmount() 
-				+ "' " + " WHERE barcode = '" + proObj.getBarcode() 
-				+ "'";
+				+ "amount ='" + proObj.getAmount()+ "', "
+				+ "orderAmount ='" + proObj.getOrderAmount() + "' " 
+				+ " WHERE barcode = '" + proObj.getBarcode() + "' and departmentId = '" + proObj.getDepartment().getId() + "'";
 		System.out.println("Update query:" + query);
 		try { 
 			Statement stmt = con.createStatement();
@@ -227,7 +225,7 @@ public class DBProduct implements IFDBProduct {
 			proObj.setMaxAmount(results.getInt("maxAmount"));
 			proObj.setOrderAmount(results.getInt("orderAmount"));
 			proObj.setDepartment(departmentCtr.findById(results.getInt("departmentId")));
-			proObj.setSupplier(supplierCtr.findSupplierById(results.getInt("supplierId")));
+			proObj.setSupplier(supplierCtr.findById(results.getInt("supplierId")));
 		} catch (Exception e) {
 			System.out.println("error in building the Product object");
 		}

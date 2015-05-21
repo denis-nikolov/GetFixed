@@ -1,6 +1,6 @@
 package DB;
 
-import Control.CtrCustomer;
+import Control.*;
 import Model.*;
 
 import java.sql.*;
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class DBSale implements IFDBSale {
 	private Connection con;
 	CtrCustomer cc = new CtrCustomer();
+	CtrDepartment departmentCtr = new CtrDepartment();
 
 	public DBSale() {
 		con = DBConnection.getInstance().getDBcon();
@@ -17,6 +18,12 @@ public class DBSale implements IFDBSale {
 	@Override
 	public ArrayList<Sale> getAllSale(boolean retriveAssociation) {
 		return miscWhere("", retriveAssociation);
+	}
+	
+	@Override
+	public ArrayList<Sale> findAllSalesByDepartmentId(int departmentId,
+			boolean retriveAssociation) {
+		return miscWhere("departmentId="+departmentId, retriveAssociation);
 	}
 
 	@Override
@@ -33,14 +40,16 @@ public class DBSale implements IFDBSale {
 		System.out.println("next id = " + nextId);
 
 		int rc = -1;
-		String query = "INSERT INTO Sale(id, date, customerId, totalPrice)  VALUES('"
+		String query = "INSERT INTO Sale(id, date, customerId, totalPrice, departmentId)  VALUES('"
 				+ nextId
 				+ "','"
 				+ sale.createDate()
 				+ "','"
 				+ sale.getCustomer().getId()
 				+ "','"
-				+ sale.getTotalPrice() + "')";
+				+ sale.getTotalPrice()
+				+ "','"
+				+ sale.getDepartment().getId()+ "')";
 
 		System.out.println("insert : " + query);
 		try {
@@ -86,22 +95,11 @@ public class DBSale implements IFDBSale {
 			results = stmt.executeQuery(query);
 
 			while (results.next()) {
-				Sale saleObj = new Sale();
-				saleObj = buildSale(results);
-				list.add(saleObj);
+				Sale sale = new Sale();
+				sale = buildSale(results);
+				list.add(sale);
 			}
 			stmt.close();
-			// if (retrieveAssociation) { // The saleervisor and department is
-			// to
-			// be
-			// // build as well
-			// for (Sale saleObj : list) {
-			// Sale saleerEmp = singleWhere(
-			// " ssn = '" + saleerssn + "'", false);
-			// System.out.println("Supervisor is seleceted");
-			// // here the department has to be selected as well
-			// }
-			// }// end if
 
 		} catch (Exception e) {
 			System.out.println("Query exception - select: " + e);
@@ -120,21 +118,23 @@ public class DBSale implements IFDBSale {
 	}
 
 	private Sale buildSale(ResultSet results) {
-		Sale saleObj = new Sale();
+		Sale sale = new Sale();
 		try {
-			saleObj.setId(results.getInt("id"));
-			saleObj.setDate(results.getString("date"));
-			saleObj.setCustomer(cc.findById(results.getInt("customerId")));
-			saleObj.setTotalPrice(results.getInt("totalPrice"));
+			sale.setId(results.getInt("id"));
+			sale.setDate(results.getString("date"));
+			sale.setCustomer(cc.findById(results.getInt("customerId")));
+			sale.setTotalPrice(results.getInt("totalPrice"));
+			sale.setDepartment(departmentCtr.findById(results.getInt("departmentId")));
+			
 		} catch (Exception e) {
 			System.out.println("error in building the Sale object");
 		}
-		return saleObj;
+		return sale;
 	}
 
 	private Sale singleWhere(String wClause, boolean retrieveAssociation) {
 		ResultSet results;
-		Sale saleObj = new Sale();
+		Sale sale = new Sale();
 
 		String query = buildQuery(wClause);
 		System.out.println(query);
@@ -144,17 +144,17 @@ public class DBSale implements IFDBSale {
 			results = stmt.executeQuery(query);
 
 			if (results.next()) {
-				saleObj = buildSale(results);
+				sale = buildSale(results);
 				stmt.close();
 
 			} else { 
-				saleObj = null;
+				sale = null;
 			}
 		}
 		catch (Exception e) {
 			System.out.println("Query exception: " + e);
 		}
-		return saleObj;
+		return sale;
 	}
 
 }

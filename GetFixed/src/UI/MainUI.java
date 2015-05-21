@@ -376,95 +376,6 @@ public class MainUI extends JFrame {
 
 		// ////////////////////////////////////////////////////////
 		// ////////////////////////////////////////////////////////
-		// /////////////////SUPPLIERS/////////////////////////////////
-		// ///////////////////////////////////////////////////////
-		// //////////////////////////////////////////////////////
-
-		JButton btnSuppliers = new JButton("Suppliers ");
-		btnSuppliers.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				secondaryMenuPanel.removeAll();
-
-				JButton btnAddSupplier = new JButton("Add Supplier");
-				secondaryMenuPanel.add(btnAddSupplier);
-				btnAddSupplier.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-
-						AddSupplierUI addSupplierUI = new AddSupplierUI(
-								contentPanel);
-						addSupplierUI.main();
-					}
-				});
-
-				JButton btnShowSupplier = new JButton("Show Supplier");
-				secondaryMenuPanel.add(btnShowSupplier);
-				btnShowSupplier.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-						ShowSupplierUI showSupplierUI = new ShowSupplierUI(
-								contentPanel, btnShowSupplier);
-						showSupplierUI.make();
-
-					}
-				});
-
-				invalidate();
-				revalidate();
-				repaint();
-				setVisible(true);
-			}
-		});
-		mainMenuPanel.add(btnSuppliers);
-		
-		
-		// ////////////////////////////////////////////////////////
-				// ////////////////////////////////////////////////////////
-				// /////////////////SUPPLIERS/////////////////////////////////
-				// ///////////////////////////////////////////////////////
-				// //////////////////////////////////////////////////////
-
-				JButton btnDepartments = new JButton("Departments ");
-				btnDepartments.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-
-						secondaryMenuPanel.removeAll();
-
-						JButton btnAddDepartment = new JButton("Add Department");
-						secondaryMenuPanel.add(btnAddDepartment);
-						btnAddDepartment.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								contentPanel.removeAll();
-
-								AddDepartmentUI addDepartmentUI = new AddDepartmentUI(
-										contentPanel);
-								addDepartmentUI.main();
-							}
-						});
-
-						JButton btnShowDepartment = new JButton("Show Department");
-						secondaryMenuPanel.add(btnShowDepartment);
-						btnShowDepartment.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								contentPanel.removeAll();
-								ShowDepartmentUI showDepartmentUI = new ShowDepartmentUI(
-										contentPanel, btnShowDepartment);
-								showDepartmentUI.make();
-
-							}
-						});
-
-						invalidate();
-						revalidate();
-						repaint();
-						setVisible(true);
-					}
-				});
-				mainMenuPanel.add(btnDepartments);
-
-		// ////////////////////////////////////////////////////////
-		// ////////////////////////////////////////////////////////
 		// /////////////////STATISTICS/////////////////////////////////
 		// ///////////////////////////////////////////////////////
 		// //////////////////////////////////////////////////////
@@ -501,18 +412,6 @@ public class MainUI extends JFrame {
 					}
 				});
 
-				JButton btnDepartmentSales = new JButton("Department's sales");
-				secondaryMenuPanel.add(btnDepartmentSales);
-				btnDepartmentSales.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						contentPanel.removeAll();
-
-						StatisticsUI s = new StatisticsUI(contentPanel,
-								secondaryMenuPanel);
-						s.makeDepartmentSales();
-
-					}
-				});
 				invalidate();
 				revalidate();
 				repaint();

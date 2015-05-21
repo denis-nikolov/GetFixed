@@ -17,6 +17,7 @@ public class ShowLeaseUI {
 	CtrProduct productCtr = new CtrProduct();
 	CtrCustomer customerCtr = new CtrCustomer();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
+	CtrDepartment departmentCtr = new CtrDepartment();
 	CtrLease leaseCtr = new CtrLease();
 	JButton btnShowLease = new JButton();
 
@@ -36,15 +37,15 @@ public class ShowLeaseUI {
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null } }, new String[] { "ID",
-				"Date", "Customer", "Period", "Returned", "Price" }) {
+				"Date", "Customer", "Period", "Returned", "Department", "Price" }) {
 			Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class, Integer.class,
-					Boolean.class, Double.class };
+					Boolean.class, String.class, Double.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 
-			boolean[] canEdit = new boolean[] { false, false, false, false, false, false };
+			boolean[] canEdit = new boolean[] { false, false, false, false, false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];
@@ -57,11 +58,160 @@ public class ShowLeaseUI {
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 
+		JButton btnRemove = new JButton("Remove row");
+		btnRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int[] rows = table.getSelectedRows();
+				for (int index = 0; index < rows.length; index++) {
+					model.removeRow(rows[index] - index);
+				}
+			}
+		});
+		btnRemove.setBounds(590, 11, 105, 25);
+		contentPanel.add(btnRemove);
+
 		model.removeRow(0);
 
 		for (Object[] object : leaseCtr.addAllLeases()) {
 			model.addRow(object);
 		}
+
+		JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
+		JRadioButton rdbtnAarhus = new JRadioButton("Aarhus");
+		JRadioButton rdbtnOdense = new JRadioButton("Odense");
+		JRadioButton rdbtnCopenhagen = new JRadioButton("Copenhagen");
+
+		rdbtnAalborg.setBounds(22, 355, 109, 23);
+		rdbtnAalborg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String department = rdbtnAalborg.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+
+				if (rdbtnAalborg.isSelected()) {
+					functionalityCtr.addId(departmentId);
+					functionalityCtr.addClick();
+
+					if (functionalityCtr.getClicks() <= 1) {
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+					}
+
+					for (Object[] object : leaseCtr.addAllLeasesForDepartment(departmentId)) {
+						model.addRow(object);
+					}
+				} else {
+					String departmentName = "";
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
+						departmentName = model.getValueAt(rows, 5).toString();
+						if (departmentName.equals(department)) {
+							model.removeRow(rows);
+							rows--;
+						}
+					}
+				}
+			}
+		});
+		contentPanel.add(rdbtnAalborg);
+
+		rdbtnAarhus.setBounds(133, 355, 109, 23);
+		rdbtnAarhus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String department = rdbtnAarhus.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+
+				if (rdbtnAarhus.isSelected()) {
+					functionalityCtr.addId(departmentId);
+					functionalityCtr.addClick();
+
+					if (functionalityCtr.getClicks() <= 1) {
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+					}
+
+					for (Object[] object : leaseCtr.addAllLeasesForDepartment(departmentId)) {
+						model.addRow(object);
+					}
+				} else {
+					String departmentName = "";
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
+						departmentName = model.getValueAt(rows, 5).toString();
+						if (departmentName.equals(department)) {
+							model.removeRow(rows);
+							rows--;
+						}
+					}
+				}
+			}
+		});
+		contentPanel.add(rdbtnAarhus);
+
+		rdbtnOdense.setBounds(244, 355, 109, 23);
+		rdbtnOdense.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String department = rdbtnOdense.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+
+				if (rdbtnOdense.isSelected()) {
+					functionalityCtr.addId(departmentId);
+					functionalityCtr.addClick();
+
+					if (functionalityCtr.getClicks() <= 1) {
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+					}
+
+					for (Object[] object : leaseCtr.addAllLeasesForDepartment(departmentId)) {
+						model.addRow(object);
+					}
+				} else {
+					String departmentName = "";
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
+						departmentName = model.getValueAt(rows, 5).toString();
+						if (departmentName.equals(department)) {
+							model.removeRow(rows);
+							rows--;
+						}
+					}
+				}
+			}
+		});
+		contentPanel.add(rdbtnOdense);
+
+		rdbtnCopenhagen.setBounds(355, 355, 109, 23);
+		rdbtnCopenhagen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String department = rdbtnCopenhagen.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+
+				if (rdbtnCopenhagen.isSelected()) {
+					functionalityCtr.addId(departmentId);
+					functionalityCtr.addClick();
+
+					if (functionalityCtr.getClicks() <= 1) {
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+					}
+
+					for (Object[] object : leaseCtr.addAllLeasesForDepartment(departmentId)) {
+						model.addRow(object);
+					}
+				} else {
+					String departmentName = "";
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
+						departmentName = model.getValueAt(rows, 5).toString();
+						if (departmentName.equals(department)) {
+							model.removeRow(rows);
+							rows--;
+						}
+					}
+				}
+			}
+		});
+		contentPanel.add(rdbtnCopenhagen);
 
 		JTextField txtSearch = new JTextField();
 		txtSearch.setBounds(15, 11, 86, 25);
@@ -129,8 +279,8 @@ public class ShowLeaseUI {
 				for (int i : vals) {
 
 					try {
-						leaseCtr.deletePartLease(Integer.parseInt(table.getValueAt(i, 0).toString()));
-						leaseCtr.deleteLease(Integer.parseInt(table.getValueAt(i, 0).toString()));
+						int id = Integer.parseInt(table.getValueAt(i, 0).toString());
+						leaseCtr.deletePartLease(id);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 						flag = false;

@@ -89,11 +89,11 @@ public class CtrProduct {
 		}
 	}
 
-	public int recalculateProAmount(int barcode, int amount) {
+	public int recalculateProAmount(int barcode, int amount, int departmentId) {
 		IFDBProduct dbProduct = new DBProduct();
 
 		Product product = new Product();
-		product = findByBarcode(barcode);
+		product = findByBarcodeAndDepartmentId(barcode, departmentId);
 
 		int newAmount = (product.getAmount() - amount);
 		product.setAmount(newAmount);
@@ -111,11 +111,11 @@ public class CtrProduct {
 		return dbProduct.recalculateProductAmount(product);
 	}
 	
-	public int returnProduct(int barcode, int amount){
+	public int returnProduct(int barcode, int amount, int departmentId){
 		IFDBProduct dbProduct = new DBProduct();
 
 		Product product = new Product();
-		product = findByBarcode(barcode);
+		product = findByBarcodeAndDepartmentId(barcode, departmentId);
 
 		int newAmount = (product.getAmount() + amount);
 		product.setAmount(newAmount);
@@ -141,7 +141,7 @@ public class CtrProduct {
 		product.setMinAmount(minAmount);
 		product.setMaxAmount(maxAmount);
 		product.setOrderAmount(orderAmount);
-		product.setSupplier(supplierCtr.findSupplierById(supplierId));
+		product.setSupplier(supplierCtr.findById(supplierId));
 		return dbProduct.updateProduct(product);
 
 	}
@@ -162,7 +162,7 @@ public class CtrProduct {
 		product.setMaxAmount(maxAmount);
 		product.setOrderAmount(orderAmount);
 		product.setDepartment(departmentCtr.findById(departmentId));
-		product.setSupplier(supplierCtr.findSupplierById(supplierId));
+		product.setSupplier(supplierCtr.findById(supplierId));
 		try {
 			DBConnection.startTransaction();
 			DBProduct dbProduct = new DBProduct();

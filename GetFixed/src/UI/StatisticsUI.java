@@ -40,9 +40,4 @@ public class StatisticsUI {
 
     
     }
-    
-    void makeDepartmentSales() {
-    	final DefaultCategoryDataset dataset = ctrStatistics.getDepartmentSales();
-    	new BarChart("GetFixed", dataset,"", "Department","DKK", contentPanel);
-    }
 }

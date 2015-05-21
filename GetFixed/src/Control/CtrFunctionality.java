@@ -5,6 +5,7 @@ import java.util.*;
 public class CtrFunctionality {
 	private ArrayList<Integer> ids = new ArrayList<Integer>();
 	private int clicks = 0;
+	private int departmentId;
 	private ArrayList<String> values = new ArrayList<String>();
 	private ArrayList<String> saleId = new ArrayList<String>();
 	private ArrayList<String> leaseId = new ArrayList<String>();
@@ -88,5 +89,13 @@ public class CtrFunctionality {
 
 	public void setLeaseId(ArrayList<String> leaseId) {
 		this.leaseId = leaseId;
+	}
+
+	public int getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(int departmentId) {
+		this.departmentId = departmentId;
 	}
 }

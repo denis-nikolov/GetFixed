@@ -113,7 +113,7 @@ public class ShowEmployeeUI {
 			public void actionPerformed(ActionEvent e) {
 
 				department = departmentCtr
-						.findByLocation(rdbtnAalborg.getText());
+						.findByName(rdbtnAalborg.getText());
 				int departmentId = department.getId();
 
 				if (rdbtnAalborg.isSelected()) {
@@ -159,7 +159,7 @@ public class ShowEmployeeUI {
 			public void actionPerformed(ActionEvent e) {
 
 				department = departmentCtr
-						.findByLocation(rdbtnAarhus.getText());
+						.findByName(rdbtnAarhus.getText());
 				int departmentId = department.getId();
 
 				if (rdbtnAarhus.isSelected()) {
@@ -205,7 +205,7 @@ public class ShowEmployeeUI {
 			public void actionPerformed(ActionEvent e) {
 
 				department = departmentCtr
-						.findByLocation(rdbtnOdense.getText());
+						.findByName(rdbtnOdense.getText());
 				int departmentId = department.getId();
 
 				if (rdbtnOdense.isSelected()) {
@@ -251,7 +251,7 @@ public class ShowEmployeeUI {
 			public void actionPerformed(ActionEvent e) {
 
 				department = departmentCtr
-						.findByLocation(rdbtnCopenhagen
+						.findByName(rdbtnCopenhagen
 								.getText());
 				int departmentId = department.getId();
 

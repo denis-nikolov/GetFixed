@@ -8,6 +8,7 @@ public class Lease {
 	private int id;
 	private String date;
 	private Customer customer;
+	private Department department;
 	private int period;
 	private double price;
 	private boolean returned;
@@ -16,10 +17,11 @@ public class Lease {
 		
 	}
 	
-	public Lease(int id, Customer customer, int period) {
+	public Lease(int id, Customer customer, Department department, int period) {
 		this.setId(id);
 		date = createDate();
 		this.customer = customer;
+		this.department = department;
 		this.period = period;
 		price = getPrice();
 		returned = false;
@@ -77,5 +79,13 @@ public class Lease {
 
 	public void setReturned(boolean returned) {
 		this.returned = returned;
+	}
+
+	public Department getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
 }

@@ -41,7 +41,7 @@ public class AddProductUI {
 		rdbtnAalborg.setBounds(22, 11, 109, 23);
 		rdbtnAalborg.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				department = departmentCtr.findByLocation(rdbtnAalborg.getText());
+				department = departmentCtr.findByName(rdbtnAalborg.getText());
 				int departmentId = department.getId();
 				if (rdbtnAalborg.isSelected()) {
 					functionalityCtr.addId(departmentId);
@@ -55,7 +55,7 @@ public class AddProductUI {
 		rdbtnAarhus.setBounds(133, 11, 109, 23);
 		rdbtnAarhus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				department = departmentCtr.findByLocation(rdbtnAarhus.getText());
+				department = departmentCtr.findByName(rdbtnAarhus.getText());
 				int departmentId = department.getId();
 				if (rdbtnAarhus.isSelected()) {
 					functionalityCtr.addId(departmentId);
@@ -69,7 +69,7 @@ public class AddProductUI {
 		rdbtnOdense.setBounds(244, 11, 109, 23);
 		rdbtnOdense.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				department = departmentCtr.findByLocation(rdbtnOdense.getText());
+				department = departmentCtr.findByName(rdbtnOdense.getText());
 				int departmentId = department.getId();
 				if (rdbtnOdense.isSelected()) {
 					functionalityCtr.addId(departmentId);
@@ -83,7 +83,7 @@ public class AddProductUI {
 		rdbtnCopenhagen.setBounds(355, 11, 109, 23);
 		rdbtnCopenhagen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				department = departmentCtr.findByLocation(rdbtnCopenhagen.getText());
+				department = departmentCtr.findByName(rdbtnCopenhagen.getText());
 				int departmentId = department.getId();
 				if (rdbtnCopenhagen.isSelected()) {
 					functionalityCtr.addId(departmentId);

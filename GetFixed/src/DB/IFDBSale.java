@@ -6,6 +6,8 @@ import java.util.ArrayList;
 public interface IFDBSale {
 
 	public ArrayList<Sale> getAllSale(boolean retriveAssociation);
+	
+	public ArrayList<Sale> findAllSalesByDepartmentId(int departmentId, boolean retriveAssociation);
 
     public Sale searchSaleId( int id, boolean retriveAssociation);
 

@@ -7,6 +7,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -55,6 +56,11 @@ public class CreateSaleUI {
 	}
 
 	void make() {
+		contentPanel.removeAll();
+
+		functionalityCtr.removeAllIds();
+		functionalityCtr.removeAllClicks();
+		
 		table = new JTable();
 
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -73,6 +79,73 @@ public class CreateSaleUI {
 				return canEdit[columnIndex];
 			}
 		});
+		
+		JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
+		JRadioButton rdbtnAarhus = new JRadioButton("Aarhus");
+		JRadioButton rdbtnOdense = new JRadioButton("Odense");
+		JRadioButton rdbtnCopenhagen = new JRadioButton("Copenhagen");
+		
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(rdbtnAalborg);
+		buttonGroup.add(rdbtnAarhus);
+		buttonGroup.add(rdbtnOdense);
+		buttonGroup.add(rdbtnCopenhagen);
+
+		rdbtnAalborg.setBounds(22, 355, 109, 23);
+		rdbtnAalborg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String department = rdbtnAalborg.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+				if (rdbtnAalborg.isSelected()) {
+					functionalityCtr.setDepartmentId(departmentId);
+				} else {
+					functionalityCtr.setDepartmentId(0);
+				}
+			}
+		});
+		contentPanel.add(rdbtnAalborg);
+
+		rdbtnAarhus.setBounds(133, 355, 109, 23);
+		rdbtnAarhus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String department = rdbtnAarhus.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+				if (rdbtnAarhus.isSelected()) {
+					functionalityCtr.setDepartmentId(departmentId);
+				} else {
+					functionalityCtr.setDepartmentId(0);
+				}
+			}
+		});
+		contentPanel.add(rdbtnAarhus);
+
+		rdbtnOdense.setBounds(244, 355, 109, 23);
+		rdbtnOdense.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String department = rdbtnOdense.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+				if (rdbtnOdense.isSelected()) {
+					functionalityCtr.setDepartmentId(departmentId);
+				} else {
+					functionalityCtr.setDepartmentId(0);
+				}
+			}
+		});
+		contentPanel.add(rdbtnOdense);
+
+		rdbtnCopenhagen.setBounds(355, 355, 109, 23);
+		rdbtnCopenhagen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String department = rdbtnCopenhagen.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+				if (rdbtnCopenhagen.isSelected()) {
+					functionalityCtr.setDepartmentId(departmentId);
+				} else {
+					functionalityCtr.setDepartmentId(0);
+				}
+			}
+		});
+		contentPanel.add(rdbtnCopenhagen);
 
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
@@ -265,8 +338,8 @@ public class CreateSaleUI {
 								JOptionPane.ERROR_MESSAGE);
 					} else {
 						saleId = saleCtr.insertSale(Integer.parseInt(textFieldCustomer.getText().toString()),
+								functionalityCtr.getDepartmentId(),
 								Double.parseDouble(textFieldPrice.getText().toString()));
-						// ic.insertInvoice(saleId);
 					}
 
 				} catch (Exception e1) {
@@ -275,6 +348,12 @@ public class CreateSaleUI {
 
 				table.selectAll();
 				int[] vals = table.getSelectedRows();
+				String products = "";
+				products += "\n#####################\n";
+				products += "Sale Id:" + saleId + "\nCustomer Id:" + textFieldCustomer.getText();
+
+				// +"\nEployee Id:" + saleCtr.findById(saleId).get ;
+				products += "\n#####################\n";
 				for (int i = 0; i < vals.length; i++) {
 					for (int x = 0; x < table.getColumnCount(); x++) {
 						functionalityCtr.addValue(table.getValueAt(i, x).toString());
@@ -286,12 +365,26 @@ public class CreateSaleUI {
 								Double.parseDouble(values.get(2)), Integer.parseInt(values.get(3)),
 								Double.parseDouble(values.get(4)));
 
+						products += "Barcode: " + (values.get(0)) + "     Name: " + values.get(1) + "     Price/pc: "
+								+ Double.parseDouble(values.get(2)) + "     Quantity: "
+								+ Integer.parseInt(values.get(3)) + "     Total: " + Double.parseDouble(values.get(4))
+								+ "\n";
+
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
 					functionalityCtr.removeAllValues();
-				}
 
+				}
+				products += "\n\n";
+				products += "Personal discount:"
+						+ customerCtr.findById(Integer.parseInt(textFieldCustomer.getText())).getDiscount() + "% \n";
+				products += "TOTAL: " + textFieldPrice.getText() + "DKK";
+				Sale trySale = saleCtr.findById(saleId);
+				if (trySale != null) {
+					JOptionPane.showMessageDialog(null, "Sale submitted!\n" + products, "Sale confirmation!",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 		});
 		btnSubmit.setBounds(738, 355, 89, 23);

@@ -1,207 +1,296 @@
 package UI;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import Control.CtrCustomer;
-import Control.CtrDepartment;
-import Control.CtrEmployee;
-import Control.CtrFunctionality;
-import Control.CtrOrder;
-import Control.CtrProduct;
-import Control.CtrSale;
-import Control.CtrService;
-import Control.CtrSupplier;
-import Model.Product;
-import Model.Sale;
-import Model.Service;
-
+import Control.*;
+import Model.*;
 
 public class ShowSaleUI {
 	private JTable table;
 	private JPanel contentPanel;
 	private JPanel secondaryMenuPanel;
-	CtrProduct productCtr = new CtrProduct();
 	CtrDepartment departmentCtr = new CtrDepartment();
-	CtrSupplier supplierCtr = new CtrSupplier();
-	CtrEmployee employeeCtr = new CtrEmployee();
-	CtrCustomer customerCtr = new CtrCustomer();
-	CtrService serviceCtr = new CtrService();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
 	CtrSale saleCtr = new CtrSale();
-	CtrOrder orderCtr = new CtrOrder();
 	JButton btnShowSale = new JButton();
-	
-	
-	ShowSaleUI(JPanel contentPanel,JPanel secondaryMenuPanel, JButton btnShowSale){
+
+	ShowSaleUI(JPanel contentPanel, JPanel secondaryMenuPanel, JButton btnShowSale) {
 		this.contentPanel = contentPanel;
 		this.secondaryMenuPanel = secondaryMenuPanel;
 		this.btnShowSale = btnShowSale;
 	}
-	void make(){
 
-	contentPanel.removeAll();
+	void make() {
+		contentPanel.removeAll();
 
-	table = new JTable();
-	table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		functionalityCtr.removeAllIds();
+		functionalityCtr.removeAllClicks();
 
-	table.setModel(new DefaultTableModel(new Object[][] { {
-			null, null, null, null } }, new String[] {
-			"ID", "Date", "Customer", "Price" }) {
-		Class[] columnTypes = new Class[] { Integer.class,
-				String.class, String.class, Double.class };
+		table = new JTable();
+		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		public Class getColumnClass(int columnIndex) {
-			return columnTypes[columnIndex];
-		}
+		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null } }, new String[] { "ID",
+				"Date", "Customer", "Department", "Price" }) {
+			Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class, Double.class };
 
-		boolean[] canEdit = new boolean[] { false, false,
-				false, false };
-
-		public boolean isCellEditable(int rowIndex,
-				int columnIndex) {
-			return canEdit[columnIndex];
-		}
-	});
-	table.setBounds(10, 27, 588, 195);
-	JScrollPane scrollPane = new JScrollPane(table);
-	scrollPane.setBounds(10, 52, 818, 300);
-	table.setFillsViewportHeight(true);
-	contentPanel.add(scrollPane);
-	DefaultTableModel model = (DefaultTableModel) table
-			.getModel();
-
-	ArrayList<Sale> saleList = saleCtr.findAllSales();
-	model.removeRow(0);
-
-	for (Sale sale : saleList) {
-
-		model.addRow(new Object[] { sale.getId(),
-				sale.getDate(), sale.getCustomer().getId(),
-				sale.getTotalPrice() });
-	}
-
-	JTextField txtSearch = new JTextField();
-	txtSearch.setBounds(15, 11, 86, 25);
-	contentPanel.add(txtSearch);
-	txtSearch.setColumns(10);
-
-	JButton btnSearch = new JButton("Search");
-	btnSearch.setBounds(111, 11, 89, 25);
-	btnSearch.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			functionalityCtr.addClick();
-			String search = txtSearch.getText();
-			boolean flag = false;
-			try {
-				Integer.parseInt(search);
-				flag = true;
-			} catch (Exception e2) {
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
 			}
 
-			Sale sale = new Sale();
+			boolean[] canEdit = new boolean[] { false, false, false, false, false };
 
-			if (functionalityCtr.getClicks() <= 1) {
-				int rowCount = model.getRowCount();
-				for (int i = rowCount - 1; i >= 0; i--) {
-					model.removeRow(i);
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+				return canEdit[columnIndex];
+			}
+		});
+		table.setBounds(10, 27, 588, 195);
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setBounds(10, 52, 818, 300);
+		table.setFillsViewportHeight(true);
+		contentPanel.add(scrollPane);
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+		model.removeRow(0);
+
+		for (Object[] object : saleCtr.addAllSales()) {
+			model.addRow(object);
+		}
+
+		JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
+		JRadioButton rdbtnAarhus = new JRadioButton("Aarhus");
+		JRadioButton rdbtnOdense = new JRadioButton("Odense");
+		JRadioButton rdbtnCopenhagen = new JRadioButton("Copenhagen");
+
+		rdbtnAalborg.setBounds(22, 355, 109, 23);
+		rdbtnAalborg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String department = rdbtnAalborg.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+
+				if (rdbtnAalborg.isSelected()) {
+					functionalityCtr.addId(departmentId);
+					functionalityCtr.addClick();
+
+					if (functionalityCtr.getClicks() <= 1) {
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+					}
+
+					for (Object[] object : saleCtr.addAllSalesForDepartment(departmentId)) {
+						model.addRow(object);
+					}
+				} else {
+					String departmentName = "";
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
+						departmentName = model.getValueAt(rows, 3).toString();
+						if (departmentName.equals(department)) {
+							model.removeRow(rows);
+							rows--;
+						}
+					}
 				}
 			}
+		});
+		contentPanel.add(rdbtnAalborg);
 
-			if (flag) {
-				sale = saleCtr.findById(Integer
-						.parseInt(search));
+		rdbtnAarhus.setBounds(133, 355, 109, 23);
+		rdbtnAarhus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String department = rdbtnAarhus.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+
+				if (rdbtnAarhus.isSelected()) {
+					functionalityCtr.addId(departmentId);
+					functionalityCtr.addClick();
+
+					if (functionalityCtr.getClicks() <= 1) {
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+					}
+
+					for (Object[] object : saleCtr.addAllSalesForDepartment(departmentId)) {
+						model.addRow(object);
+					}
+				} else {
+					String departmentName = "";
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
+						departmentName = model.getValueAt(rows, 3).toString();
+						if (departmentName.equals(department)) {
+							model.removeRow(rows);
+							rows--;
+						}
+					}
+				}
 			}
-			model.addRow(new Object[] { sale.getId(),
-					sale.getDate(),
-					sale.getCustomer().getId(),
-					sale.getTotalPrice() });
-			txtSearch.setText("");
-		}
-	});
-	contentPanel.add(btnSearch);
+		});
+		contentPanel.add(rdbtnAarhus);
 
-	JButton btnShowProducts = new JButton("Show items");
-	btnShowProducts.setBounds(705, 11, 120, 25);
-	btnShowProducts.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+		rdbtnOdense.setBounds(244, 355, 109, 23);
+		rdbtnOdense.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 
-			for (int index = 0; index < functionalityCtr.getSaleId().size(); index++) {
-				functionalityCtr.getSaleId().remove(index);
+				String department = rdbtnOdense.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+
+				if (rdbtnOdense.isSelected()) {
+					functionalityCtr.addId(departmentId);
+					functionalityCtr.addClick();
+
+					if (functionalityCtr.getClicks() <= 1) {
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+					}
+
+					for (Object[] object : saleCtr.addAllSalesForDepartment(departmentId)) {
+						model.addRow(object);
+					}
+				} else {
+					String departmentName = "";
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
+						departmentName = model.getValueAt(rows, 3).toString();
+						if (departmentName.equals(department)) {
+							model.removeRow(rows);
+							rows--;
+						}
+					}
+				}
 			}
+		});
+		contentPanel.add(rdbtnOdense);
 
-			int[] vals = table.getSelectedRows();
-			for (int i : vals) {
-				functionalityCtr.getSaleId().add(table.getValueAt(i, 0)
-						.toString());
+		rdbtnCopenhagen.setBounds(355, 355, 109, 23);
+		rdbtnCopenhagen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String department = rdbtnCopenhagen.getText();
+				int departmentId = departmentCtr.findByName(department).getId();
+
+				if (rdbtnCopenhagen.isSelected()) {
+					functionalityCtr.addId(departmentId);
+					functionalityCtr.addClick();
+
+					if (functionalityCtr.getClicks() <= 1) {
+						model.getDataVector().removeAllElements();
+						model.fireTableDataChanged();
+					}
+
+					for (Object[] object : saleCtr.addAllSalesForDepartment(departmentId)) {
+						model.addRow(object);
+					}
+				} else {
+					String departmentName = "";
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
+						departmentName = model.getValueAt(rows, 3).toString();
+						if (departmentName.equals(department)) {
+							model.removeRow(rows);
+							rows--;
+						}
+					}
+				}
 			}
+		});
+		contentPanel.add(rdbtnCopenhagen);
 
-			ShowItemsInSaleUI frame = new ShowItemsInSaleUI(functionalityCtr);
-			frame.pack();
-			frame.setBounds(200, 200, 500, 250);
-			frame.setTitle("Products in sales");
-			frame.setVisible(true);
+		JTextField txtSearch = new JTextField();
+		txtSearch.setBounds(15, 11, 86, 25);
+		contentPanel.add(txtSearch);
+		txtSearch.setColumns(10);
 
-		}
-	});
-	contentPanel.add(btnShowProducts);
-
-	JButton btnDelete = new JButton("Delete");
-	btnDelete.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-
-			int[] vals = table.getSelectedRows();
-			boolean flag = true;
-			for (int i : vals) {
-
+		JButton btnSearch = new JButton("Search");
+		btnSearch.setBounds(111, 11, 89, 25);
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				functionalityCtr.addClick();
+				String search = txtSearch.getText();
+				boolean flag = false;
 				try {
-					saleCtr.deletePartSale(Integer
-							.parseInt(table
-									.getValueAt(i, 0)
-									.toString()));
-					// ic.deleteInvoice(Integer.parseInt(table
-					// .getValueAt(i, 0).toString()));
-					saleCtr.deleteSale(Integer
-							.parseInt(table
-									.getValueAt(i, 0)
-									.toString()));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					flag = false;
+					Integer.parseInt(search);
+					flag = true;
+				} catch (Exception e2) {
 				}
+
+				Sale sale = new Sale();
+
+				if (functionalityCtr.getClicks() <= 1) {
+					int rowCount = model.getRowCount();
+					for (int i = rowCount - 1; i >= 0; i--) {
+						model.removeRow(i);
+					}
+				}
+
+				if (flag) {
+					sale = saleCtr.findById(Integer.parseInt(search));
+				}
+				model.addRow(new Object[] { sale.getId(), sale.getDate(), sale.getCustomer().getId(),
+						sale.getDepartment().getName(), sale.getTotalPrice() });
+				txtSearch.setText("");
+			}
+		});
+		contentPanel.add(btnSearch);
+
+		JButton btnShowProducts = new JButton("Show items");
+		btnShowProducts.setBounds(705, 11, 120, 25);
+		btnShowProducts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				for (int index = 0; index < functionalityCtr.getSaleId().size(); index++) {
+					functionalityCtr.getSaleId().remove(index);
+				}
+
+				int[] vals = table.getSelectedRows();
+				for (int i : vals) {
+					functionalityCtr.getSaleId().add(table.getValueAt(i, 0).toString());
+				}
+
+				ShowItemsInSaleUI frame = new ShowItemsInSaleUI(functionalityCtr);
+				frame.pack();
+				frame.setBounds(200, 200, 500, 250);
+				frame.setTitle("Products in sales");
+				frame.setVisible(true);
+
+			}
+		});
+		contentPanel.add(btnShowProducts);
+
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				int[] vals = table.getSelectedRows();
+				boolean flag = true;
+				for (int i : vals) {
+
+					try {
+						saleCtr.deletePartSale(Integer.parseInt(table.getValueAt(i, 0).toString()));
+						// ic.deleteInvoice(Integer.parseInt(table
+						// .getValueAt(i, 0).toString()));
+						saleCtr.deleteSale(Integer.parseInt(table.getValueAt(i, 0).toString()));
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						flag = false;
+					}
+
+				}
+
+				btnShowSale.doClick();
 
 			}
 
-			btnShowSale.doClick();
+		});
+		btnDelete.setBounds(739, 380, 89, 23);
+		contentPanel.add(btnDelete);
 
-		}
+		contentPanel.invalidate();
+		contentPanel.revalidate();
+		contentPanel.repaint();
+		contentPanel.setVisible(true);
 
-	});
-	btnDelete.setBounds(739, 380, 89, 23);
-	contentPanel.add(btnDelete);
-
-	contentPanel.invalidate();
-	contentPanel.revalidate();
-	contentPanel.repaint();
-	contentPanel.setVisible(true);
-
+	}
 }
-}
-
