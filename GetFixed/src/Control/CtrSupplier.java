@@ -17,12 +17,12 @@ public class CtrSupplier {
 		return allSupplier;
 	}
 
-	public Supplier findByName(String name) {
+	public Supplier findSupplierByName(String name) {
 		IFDBSupplier dbSupplier = new DBSupplier();
 		return dbSupplier.searchSupplierByName(name, true);
 	}
 
-	public Supplier findById(int id) {
+	public Supplier findSupplierById(int id) {
 		IFDBSupplier dbSupplier = new DBSupplier();
 		return dbSupplier.searchSupplierById(id, true);
 	}
@@ -42,9 +42,10 @@ public class CtrSupplier {
 
 	}
 
-	public void insertSupplier(String name, String surname, String address,
+	public void insertSupplier(int id, String name, String surname, String address,
 			String telephone, String email) throws Exception {
 		Supplier supplier = new Supplier();
+		supplier.setId(id);
 		supplier.setName(name);
 		supplier.setSurname(surname);
 		supplier.setAddress(address);
@@ -73,6 +74,41 @@ public class CtrSupplier {
 			DBConnection.rollbackTransaction();
 			throw new Exception("Supplier not deleted");
 		}
+	}
+	
+	public Object[] addSupplierById(int id) {
+		Supplier supplier = findSupplierById(id);
+		Object[] object = null;
+		object = new Object[] { supplier.getId(), supplier.getName(),
+				supplier.getSurname(), supplier.getAddress(),
+				supplier.getTelephone(), supplier.getEmail()};
+
+		return object;
+	}
+
+	public Object[] addSupplierByName(String name) {
+		Supplier supplier = findSupplierByName(name);
+		Object[] object = null;
+		object = new Object[] { supplier.getId(), supplier.getName(),
+				supplier.getSurname(), supplier.getAddress(),
+				supplier.getTelephone(), supplier.getEmail()
+				 };
+
+		return object;
+	}
+
+	
+	public ArrayList<Object[]> addAllSuppliers() {
+		ArrayList<Supplier> supplierList = findAllSuppliers();
+		Object[] object = null;
+		ArrayList<Object[]> objectArray = new ArrayList<Object[]>();
+		for (Supplier supplier : supplierList) {
+			object = new Object[] { supplier.getId(), supplier.getName(),
+					supplier.getSurname(), supplier.getAddress(),
+					supplier.getTelephone(), supplier.getEmail()};
+			objectArray.add(object);
+		}
+		return objectArray;
 	}
 
 }

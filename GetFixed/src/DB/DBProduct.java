@@ -227,7 +227,7 @@ public class DBProduct implements IFDBProduct {
 			proObj.setMaxAmount(results.getInt("maxAmount"));
 			proObj.setOrderAmount(results.getInt("orderAmount"));
 			proObj.setDepartment(departmentCtr.findById(results.getInt("departmentId")));
-			proObj.setSupplier(supplierCtr.findById(results.getInt("supplierId")));
+			proObj.setSupplier(supplierCtr.findSupplierById(results.getInt("supplierId")));
 		} catch (Exception e) {
 			System.out.println("error in building the Product object");
 		}

@@ -12,7 +12,7 @@ import DB.DBStatistics;
 public class CtrStatistics {
 	CtrProduct productCtr = new CtrProduct();
 	CtrService serviceCtr = new CtrService();
-	
+	CtrDepartment departmentCtr = new CtrDepartment();
 	
 	  public DefaultCategoryDataset getMostSoldProduct() {
 	    	Map<Integer, Integer> myMap = new HashMap<Integer, Integer>();
@@ -58,6 +58,31 @@ public class CtrStatistics {
 	    	{
 	    	    System.out.println(entry.getKey() + "/" + entry.getValue());
 	    	    dataset.addValue(entry.getKey(), serviceCtr.findByBarcode(entry.getValue()).getName(), category1);
+	    	}
+	    	
+	    	
+	        return dataset;
+
+	    }
+	  
+	  public DefaultCategoryDataset getDepartmentSales() {
+	    	Map<Integer, Integer> myMap = new HashMap<Integer, Integer>();
+	    	 final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	    	 final String category1 = "Turnover for each department";
+	    	 
+	    	try {
+				DBConnection.startTransaction();
+				DBStatistics dbStatistics = new DBStatistics();
+				myMap = dbStatistics.getDepartmentSales();
+				DBConnection.commitTransaction();
+			} catch (Exception e) {
+				DBConnection.rollbackTransaction();
+			}
+	    	
+	    	for (Map.Entry<Integer, Integer> entry : myMap.entrySet())
+	    	{
+	    	    System.out.println(entry.getKey() + "/" + entry.getValue());
+	    	    dataset.addValue(entry.getKey(), departmentCtr.findById(entry.getValue()).getName(), category1);
 	    	}
 	    	
 	    	

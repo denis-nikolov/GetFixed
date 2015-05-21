@@ -141,7 +141,7 @@ public class CtrProduct {
 		product.setMinAmount(minAmount);
 		product.setMaxAmount(maxAmount);
 		product.setOrderAmount(orderAmount);
-		product.setSupplier(supplierCtr.findById(supplierId));
+		product.setSupplier(supplierCtr.findSupplierById(supplierId));
 		return dbProduct.updateProduct(product);
 
 	}
@@ -162,7 +162,7 @@ public class CtrProduct {
 		product.setMaxAmount(maxAmount);
 		product.setOrderAmount(orderAmount);
 		product.setDepartment(departmentCtr.findById(departmentId));
-		product.setSupplier(supplierCtr.findById(supplierId));
+		product.setSupplier(supplierCtr.findSupplierById(supplierId));
 		try {
 			DBConnection.startTransaction();
 			DBProduct dbProduct = new DBProduct();
