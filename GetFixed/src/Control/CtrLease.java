@@ -79,10 +79,8 @@ public class CtrLease {
 		Lease lease = findById(id);
 
 		ArrayList<PartLease> part = findAllPartLeasesByLeaseId(id);
-		System.out.println("FindAll: " + findAllPartLeasesByLeaseId(id));
-		System.out.println("Size: " + part.size());
 		for (PartLease partLease : part) {
-			productCtr.returnProduct(partLease.getBarcode(), partLease.getAmount(), lease.getDepartment().getId());
+			productCtr.returnProductCalculation(partLease.getBarcode(), partLease.getAmount(), lease.getDepartment().getId());
 		}
 
 		lease.setReturned(true);
@@ -116,20 +114,11 @@ public class CtrLease {
 	}
 
 	public void deleteLease(int id) throws Exception {
-		System.out.println("Lease ID: " + id);
-		
 		Lease lease = findById(id);
-		
-		System.out.println("Returned: " + lease.isReturned());
-		
 		if (!lease.isReturned()) {
 			ArrayList<PartLease> part = findAllPartLeasesByLeaseId(id);
-			System.out.println("FindAll: " + findAllPartLeasesByLeaseId(id));
-			System.out.println("Size: " + part.size());
 			for (PartLease partLease : part) {
-				System.out.println("Barcode: " + partLease.getBarcode() + " Amount: " + partLease.getAmount()
-						+ " DepartmentId: " + lease.getDepartment().getId());
-				productCtr.returnProduct(partLease.getBarcode(), partLease.getAmount(), lease.getDepartment().getId());
+				productCtr.returnProductCalculation(partLease.getBarcode(), partLease.getAmount(), lease.getDepartment().getId());
 			}
 		}
 		try {
@@ -167,7 +156,7 @@ public class CtrLease {
 			DBConnection.startTransaction();
 			DBPartLease dbPartLease = new DBPartLease();
 			dbPartLease.insertPartLease(partLease);
-			productCtr.recalculateProAmount(barcode, amount, departmentId);
+			productCtr.leaseProductCalculation(barcode, amount, departmentId);
 			DBConnection.commitTransaction();
 		} catch (Exception e) {
 			DBConnection.rollbackTransaction();

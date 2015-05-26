@@ -24,16 +24,8 @@ import Model.Department;
 public class AddDepartmentUI {
 	private JTable table;
 	private JPanel contentPanel;
-	CtrProduct productCtr = new CtrProduct();
 	CtrDepartment departmentCtr = new CtrDepartment();
-	CtrDepartment DepartmentCtr = new CtrDepartment();
-	CtrCustomer customerCtr = new CtrCustomer();
-	CtrService serviceCtr = new CtrService();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
-	CtrSale saleCtr = new CtrSale();
-	CtrOrder orderCtr = new CtrOrder();
-	ArrayList<String> saleID = new ArrayList<>();
-	protected Department department;
 
 	AddDepartmentUI(JPanel contentPanel) {
 		this.contentPanel = contentPanel;
@@ -47,11 +39,10 @@ public class AddDepartmentUI {
 
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		table.setModel(new DefaultTableModel(new Object[][] { { null, null,
-				null, null, null, null } }, new String[] { "ID","Name", "Address", "Location",
-				"Telephone", "E-mail" }) {
-			Class[] columnTypes = new Class[] { Integer.class, String.class,
-					String.class, String.class, String.class, String.class  };
+		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null, null } }, new String[] {
+				"ID", "Name", "Address", "Location", "Telephone", "E-mail" }) {
+			Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class, String.class,
+					String.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
@@ -65,7 +56,7 @@ public class AddDepartmentUI {
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -76,7 +67,7 @@ public class AddDepartmentUI {
 				model.addRow(new Object[] { null, null, null, null, null, null });
 			}
 		});
-		btnAdd.setBounds(635, 11, 89, 23);
+		btnAdd.setBounds(635 + functionalityCtr.getAddWidth(), 11, 89, 23);
 		contentPanel.add(btnAdd);
 
 		JButton btnRemove = new JButton("Remove");
@@ -88,10 +79,9 @@ public class AddDepartmentUI {
 				}
 			}
 		});
-		btnRemove.setBounds(739, 11, 89, 23);
+		btnRemove.setBounds(739 + functionalityCtr.getAddWidth(), 11, 89, 23);
 		contentPanel.add(btnRemove);
 
-	
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -100,16 +90,15 @@ public class AddDepartmentUI {
 				int[] vals = table.getSelectedRows();
 				for (int i = 0; i < vals.length; i++) {
 					ArrayList<String> values = new ArrayList<>();
-				
+
 					try {
 						for (int x = 0; x < table.getColumnCount(); x++) {
 							values.add(table.getValueAt(i, x).toString());
-							
+
 						}
 
-						DepartmentCtr.insertDepartment(Integer.parseInt(values.get(0)),
-								values.get(1), values.get(2), values.get(3),
-								values.get(4),values.get(5));
+						departmentCtr.insertDepartment(values.get(1), values.get(2), values.get(3), values.get(4),
+								values.get(5));
 
 					} catch (Exception e1) {
 						e1.printStackTrace();
@@ -119,7 +108,7 @@ public class AddDepartmentUI {
 
 			}
 		});
-		btnSubmit.setBounds(530, 355, 89, 23);
+		btnSubmit.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();

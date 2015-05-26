@@ -2,7 +2,9 @@ package UI;
 
 import java.awt.Font;
 import java.awt.event.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import Control.*;
 import Model.*;
 
-public class ShowLeaseUI {
+public class ReceiveOrderUI {
 	private JTable table;
 	private JPanel contentPanel;
 	private JPanel secondaryMenuPanel;
@@ -18,13 +20,13 @@ public class ShowLeaseUI {
 	CtrCustomer customerCtr = new CtrCustomer();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
 	CtrDepartment departmentCtr = new CtrDepartment();
-	CtrLease leaseCtr = new CtrLease();
-	JButton btnShowLease = new JButton();
+	CtrOrder orderCtr = new CtrOrder();
+	JButton btnReceiveOrder = new JButton();
 
-	ShowLeaseUI(JPanel contentPanel, JPanel secondaryMenuPanel, JButton btnShowLease) {
+	ReceiveOrderUI(JPanel contentPanel, JPanel secondaryMenuPanel, JButton btnReceiveOrder) {
 		this.contentPanel = contentPanel;
 		this.secondaryMenuPanel = secondaryMenuPanel;
-		this.btnShowLease = btnShowLease;
+		this.btnReceiveOrder = btnReceiveOrder;
 	}
 
 	void make() {
@@ -36,16 +38,18 @@ public class ShowLeaseUI {
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null } }, new String[] { "ID",
-				"Date", "Customer", "Period", "Returned", "Department", "Price" }) {
-			Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class, Integer.class,
-					Boolean.class, String.class, Double.class };
+		table.setModel(new DefaultTableModel(
+				new Object[][] { { null, null, null, null, null, null, null, null, null } }, new String[] { "ID",
+						"Date", "Product Barcode", "Product Name", "Price/pc", "Quantity", "Price", "Received",
+						"Department" }) {
+			Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class, String.class, Double.class,
+					Integer.class, Double.class, Boolean.class, String.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 
-			boolean[] canEdit = new boolean[] { false, false, false, false, false, false, false };
+			boolean[] canEdit = new boolean[] { false, false, false, false, false, false, false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];
@@ -57,7 +61,7 @@ public class ShowLeaseUI {
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
-
+		
 		JButton btnRemove = new JButton("Remove row");
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -69,13 +73,7 @@ public class ShowLeaseUI {
 		});
 		btnRemove.setBounds(590 + functionalityCtr.getAddWidth(), 11, 105, 25);
 		contentPanel.add(btnRemove);
-
-		model.removeRow(0);
-
-		for (Object[] object : leaseCtr.addAllLeases()) {
-			model.addRow(object);
-		}
-
+		
 		JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
 		JRadioButton rdbtnAarhus = new JRadioButton("Aarhus");
 		JRadioButton rdbtnOdense = new JRadioButton("Odense");
@@ -97,7 +95,7 @@ public class ShowLeaseUI {
 						model.fireTableDataChanged();
 					}
 
-					for (Object[] object : leaseCtr.addAllLeasesForDepartment(departmentId)) {
+					for (Object[] object : orderCtr.addAllOrdersForDepartment(departmentId)) {
 						model.addRow(object);
 					}
 				} else {
@@ -130,7 +128,7 @@ public class ShowLeaseUI {
 						model.fireTableDataChanged();
 					}
 
-					for (Object[] object : leaseCtr.addAllLeasesForDepartment(departmentId)) {
+					for (Object[] object : orderCtr.addAllOrdersForDepartment(departmentId)) {
 						model.addRow(object);
 					}
 				} else {
@@ -163,7 +161,7 @@ public class ShowLeaseUI {
 						model.fireTableDataChanged();
 					}
 
-					for (Object[] object : leaseCtr.addAllLeasesForDepartment(departmentId)) {
+					for (Object[] object : orderCtr.addAllOrdersForDepartment(departmentId)) {
 						model.addRow(object);
 					}
 				} else {
@@ -196,7 +194,7 @@ public class ShowLeaseUI {
 						model.fireTableDataChanged();
 					}
 
-					for (Object[] object : leaseCtr.addAllLeasesForDepartment(departmentId)) {
+					for (Object[] object : orderCtr.addAllOrdersForDepartment(departmentId)) {
 						model.addRow(object);
 					}
 				} else {
@@ -212,6 +210,12 @@ public class ShowLeaseUI {
 			}
 		});
 		contentPanel.add(rdbtnCopenhagen);
+
+		model.removeRow(0);
+
+		for (Object[] object : orderCtr.addAllUnrecievedOrders()) {
+			model.addRow(object);
+		}
 
 		JTextField txtSearch = new JTextField();
 		txtSearch.setBounds(15, 11, 86, 25);
@@ -239,67 +243,37 @@ public class ShowLeaseUI {
 				}
 
 				if (flag) {
-					model.addRow(leaseCtr.addLeaseById(Integer.parseInt(search)));
+					model.addRow(orderCtr.addOrderById(Integer.parseInt(search)));
 				}
 				txtSearch.setText("");
 			}
 		});
 		contentPanel.add(btnSearch);
 
-		JButton btnShowProducts = new JButton("Show items");
-		btnShowProducts.setBounds(705 + functionalityCtr.getAddWidth(), 11, 120, 25);
-		btnShowProducts.addActionListener(new ActionListener() {
+		JButton btnReceiveProduct = new JButton("Receive Product");
+		btnReceiveProduct.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				for (int index = 0; index < functionalityCtr.getLeaseId().size(); index++) {
-					functionalityCtr.getLeaseId().remove(index);
-				}
-
 				int[] vals = table.getSelectedRows();
 				for (int i : vals) {
-					functionalityCtr.getLeaseId().add(table.getValueAt(i, 0).toString());
-				}
-
-				ShowItemsInLeaseUI frame = new ShowItemsInLeaseUI(functionalityCtr);
-				frame.pack();
-				frame.setBounds(200, 200, 500 + functionalityCtr.getAddWidth(), 250);
-				frame.setTitle("Products in leases");
-				frame.setVisible(true);
-
-			}
-		});
-		contentPanel.add(btnShowProducts);
-
-		JButton btnDelete = new JButton("Delete");
-		btnDelete.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				int[] vals = table.getSelectedRows();
-				boolean flag = true;
-				for (int i : vals) {
-
+					int id = Integer.parseInt(model.getValueAt(i, 0).toString());
 					try {
-						int id = Integer.parseInt(table.getValueAt(i, 0).toString());
-						leaseCtr.deleteLease(id);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-						flag = false;
+						orderCtr.endOrder(id);
+						JOptionPane.showMessageDialog(null, "Order recieved!", "Order confirmation",
+								JOptionPane.INFORMATION_MESSAGE);
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-
 				}
-
-				btnShowLease.doClick();
-
+				btnReceiveOrder.doClick();
 			}
 
 		});
-		btnDelete.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
-		contentPanel.add(btnDelete);
+		btnReceiveProduct.setBounds(717 + functionalityCtr.getAddWidth(), 355, 110, 23);
+		contentPanel.add(btnReceiveProduct);
 
 		contentPanel.invalidate();
 		contentPanel.revalidate();
 		contentPanel.repaint();
 		contentPanel.setVisible(true);
-
 	}
 }

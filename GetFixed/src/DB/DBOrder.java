@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class DBOrder implements IFDBOrder {
 	private Connection con;
 	CtrProduct productCtr = new CtrProduct();
+	CtrDepartment departmentCtr = new CtrDepartment();
 
 	public DBOrder() {
 		con = DBConnection.getInstance().getDBcon();
@@ -17,6 +18,11 @@ public class DBOrder implements IFDBOrder {
 	@Override
 	public ArrayList<Order> getAllOrder(boolean retriveAssociation) {
 		return miscWhere("", retriveAssociation);
+	}
+
+	@Override
+	public ArrayList<Order> findAllOrdersByDepartmentId(int departmentId, boolean retriveAssociation) {
+		return miscWhere("departmentId=" + departmentId, retriveAssociation);
 	}
 
 	@Override
@@ -33,7 +39,7 @@ public class DBOrder implements IFDBOrder {
 		System.out.println("next id = " + nextId);
 
 		int rc = -1;
-		String query = "INSERT INTO Orders(id, date, productBarcode, productName, pricePerPiece, amount, price)  VALUES('"
+		String query = "INSERT INTO Orders(id, date, productBarcode, productName, pricePerPiece, amount, price, received, departmentId)  VALUES('"
 				+ nextId
 				+ "','"
 				+ order.createDate()
@@ -44,9 +50,14 @@ public class DBOrder implements IFDBOrder {
 				+ "','"
 				+ order.getProduct().getOrderingPrice()
 				+ "','"
-				+ order.getAmount()
-				+ "','"
-				+ order.getPrice() + "')";
+				+ order.getAmount() 
+				+ "','" 
+				+ order.getPrice()
+				+ "','" 
+				+ order.isReceived()
+				+ "','" 
+				+ order.getDepartment().getId()
+				+ "')";
 
 		System.out.println("insert : " + query);
 		try {
@@ -54,12 +65,31 @@ public class DBOrder implements IFDBOrder {
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate(query);
 			stmt.close();
-		}
-		catch (SQLException ex) {
+		} catch (SQLException ex) {
 			System.out.println("order is not inserted correct");
 			throw new Exception("order is not inserted correct");
 		}
 		return nextId;
+	}
+
+	@Override
+	public int endOrder(Order order) {
+		Order orderObj = order;
+		int rc = -1;
+
+		String query = "UPDATE Orders SET " + "received ='" + orderObj.isReceived() + "' " + " WHERE id = '"
+				+ orderObj.getId() + "'";
+		System.out.println("Update query:" + query);
+		try {
+			Statement stmt = con.createStatement();
+			stmt.setQueryTimeout(5);
+			rc = stmt.executeUpdate(query);
+
+			stmt.close();
+		} catch (Exception ex) {
+			System.out.println("Update exception in Order db: " + ex);
+		}
+		return (rc);
 	}
 
 	public int deleteOrder(int id) {
@@ -67,13 +97,12 @@ public class DBOrder implements IFDBOrder {
 
 		String query = "DELETE FROM Orders WHERE id = '" + id + "'";
 		System.out.println(query);
-		try { 
+		try {
 			Statement stmt = con.createStatement();
 			stmt.setQueryTimeout(5);
 			rc = stmt.executeUpdate(query);
 			stmt.close();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			System.out.println("Delete exception in Order db: " + ex);
 		}
 		return (rc);
@@ -92,22 +121,22 @@ public class DBOrder implements IFDBOrder {
 			results = stmt.executeQuery(query);
 
 			while (results.next()) {
-				Order orderObj = new Order();
-				orderObj = buildOrder(results);
-				list.add(orderObj);
+				Order order = new Order();
+				order = buildOrder(results);
+				list.add(order);
 			}
 			stmt.close();
-			// if (retrieveAssociation) { // The orderervisor and department is
-			// to
-			// be
-			// // build as well
-			// for (Order orderObj : list) {
-			// Order ordererEmp = singleWhere(
-			// " ssn = '" + ordererssn + "'", false);
-			// System.out.println("Supervisor is seleceted");
-			// // here the department has to be selected as well
-			// }
-			// }// end if
+//			 if (retrieveAssociation) { // The orderervisor and department is
+//			 //to
+//			// be
+//			 // build as well
+//			 for (Order order : list) {
+//			 Order ordererEmp = singleWhere(
+//			 " ssn = '" + ordererssn + "'", false);
+//			 System.out.println("Supervisor is seleceted");
+//			 // here the department has to be selected as well
+//			 }
+//			 }// end if
 
 		} catch (Exception e) {
 			System.out.println("Query exception - select: " + e);
@@ -126,44 +155,45 @@ public class DBOrder implements IFDBOrder {
 	}
 
 	private Order buildOrder(ResultSet results) {
-		Order orderObj = new Order();
+		Order order = new Order();
 		try {
-			orderObj.setId(results.getInt("id"));
-			orderObj.setDate(results.getString("date"));
-			orderObj.setProduct(productCtr.findByBarcode(results.getInt("productBarcode")));
-			orderObj.setProductName(productCtr.findByBarcode(results.getInt("productBarcode")).getName());
-			orderObj.setPricePerPiece(productCtr.findByBarcode(results.getInt("productBarcode")).getOrderingPrice());
-			orderObj.setAmount(results.getInt("amount"));
-			orderObj.setPrice(results.getDouble("price"));
+			order.setId(results.getInt("id"));
+			order.setDate(results.getString("date"));
+			order.setProduct(productCtr.findByBarcode(results.getInt("productBarcode")));
+			order.setProductName(productCtr.findByBarcode(results.getInt("productBarcode")).getName());
+			order.setPricePerPiece(productCtr.findByBarcode(results.getInt("productBarcode")).getOrderingPrice());
+			order.setAmount(results.getInt("amount"));
+			order.setPrice(results.getDouble("price"));
+			order.setReceived(results.getBoolean("received"));
+			order.setDepartment(departmentCtr.findById(results.getInt("departmentId")));
 		} catch (Exception e) {
 			System.out.println("error in building the Orders object");
 		}
-		return orderObj;
+		return order;
 	}
 
 	private Order singleWhere(String wClause, boolean retrieveAssociation) {
 		ResultSet results;
-		Order orderObj = new Order();
+		Order order = new Order();
 
 		String query = buildQuery(wClause);
 		System.out.println(query);
-		try { 
+		try {
 			Statement stmt = con.createStatement();
 			stmt.setQueryTimeout(5);
 			results = stmt.executeQuery(query);
 
 			if (results.next()) {
-				orderObj = buildOrder(results);
+				order = buildOrder(results);
 				stmt.close();
 
-			} else { 
-				orderObj = null;
+			} else {
+				order = null;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println("Query exception: " + e);
 		}
-		return orderObj;
+		return order;
 	}
 
 }

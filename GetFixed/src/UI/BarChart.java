@@ -16,16 +16,18 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.util.SortOrder;
+
+import Control.CtrFunctionality;
 
 public class BarChart {
+	CtrFunctionality functionalityCtr = new CtrFunctionality();
 
 	public BarChart(final String title, CategoryDataset dataset,
 			String chartTitle, String x, String y, JPanel contentPanel) {
 		final JFreeChart chart = createChart(dataset, chartTitle, x, y);
 		final ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setSize(new Dimension(500, 270));
-		chartPanel.setBounds(0, 0, 838, 414);
+		chartPanel.setBounds(0, 0, 838 + functionalityCtr.getAddWidth(), 414);
 
 		contentPanel.add(chartPanel);
 		contentPanel.invalidate();

@@ -27,26 +27,18 @@ public class ShowServiceUI {
 	private JTable table;
 	private JPanel contentPanel;
 	private JPanel secondaryMenuPanel;
-	private JTextField txtSearch;
-	CtrProduct productCtr = new CtrProduct();
-	CtrDepartment departmentCtr = new CtrDepartment();
-	CtrSupplier supplierCtr = new CtrSupplier();
-	CtrEmployee employeeCtr = new CtrEmployee();
-	CtrCustomer customerCtr = new CtrCustomer();
+	private JTextField txtSearch;;
 	CtrService serviceCtr = new CtrService();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
-	CtrSale saleCtr = new CtrSale();
-	CtrOrder orderCtr = new CtrOrder();
-	ArrayList<String> saleID = new ArrayList<>();
 	JButton btnShowService = new JButton();
-	
-	
-	ShowServiceUI(JPanel contentPanel,JPanel secondaryMenuPanel, JButton btnShowService){
+
+	ShowServiceUI(JPanel contentPanel, JPanel secondaryMenuPanel, JButton btnShowService) {
 		this.contentPanel = contentPanel;
 		this.secondaryMenuPanel = secondaryMenuPanel;
 		this.btnShowService = btnShowService;
 	}
-	void make(){
+
+	void make() {
 		contentPanel.removeAll();
 
 		functionalityCtr.removeAllIds();
@@ -54,31 +46,26 @@ public class ShowServiceUI {
 
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		table.setModel(new DefaultTableModel(new Object[][] { {
-				null, null, null } }, new String[] { "Barcode",
-				"Name", "Price" }) {
-			Class[] columnTypes = new Class[] { Integer.class,
-					String.class, Float.class };
+		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null } }, new String[] { "Barcode", "Name",
+				"Price" }) {
+			Class[] columnTypes = new Class[] { Integer.class, String.class, Float.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 
-			boolean[] canEdit = new boolean[] { false, true,
-					true };
+			boolean[] canEdit = new boolean[] { false, true, true };
 
-			public boolean isCellEditable(int rowIndex,
-					int columnIndex) {
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];
 			}
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
-		DefaultTableModel model = (DefaultTableModel) table
-				.getModel();
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
 
 		JButton btnRemove = new JButton("Remove row");
 		btnRemove.addActionListener(new ActionListener() {
@@ -89,7 +76,7 @@ public class ShowServiceUI {
 				}
 			}
 		});
-		btnRemove.setBounds(720, 11, 105, 23);
+		btnRemove.setBounds(720 + functionalityCtr.getAddWidth(), 11, 105, 23);
 		contentPanel.add(btnRemove);
 
 		model.removeRow(0);
@@ -124,12 +111,9 @@ public class ShowServiceUI {
 				}
 
 				if (flag) {
-					model.addRow(serviceCtr
-							.addServiceByBarcode(Integer
-									.parseInt(search)));
+					model.addRow(serviceCtr.addServiceByBarcode(Integer.parseInt(search)));
 				} else {
-					model.addRow(serviceCtr
-							.addServiceByName(search));
+					model.addRow(serviceCtr.addServiceByName(search));
 				}
 
 				txtSearch.setText("");
@@ -144,18 +128,15 @@ public class ShowServiceUI {
 				for (int i : vals) {
 					ArrayList<String> values = new ArrayList<>();
 					for (int x = 0; x < table.getColumnCount(); x++) {
-						values.add(table.getValueAt(i, x)
-								.toString());
+						values.add(table.getValueAt(i, x).toString());
 
 					}
-					serviceCtr.updateService(
-							Integer.parseInt(values.get(0)),
-							values.get(1),
+					serviceCtr.updateService(Integer.parseInt(values.get(0)), values.get(1),
 							Double.parseDouble(values.get(2)));
 				}
 			}
 		});
-		btnUpdate.setBounds(639, 380, 89, 23);
+		btnUpdate.setBounds(639 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnUpdate);
 
 		JButton btnDelete = new JButton("Delete");
@@ -167,12 +148,7 @@ public class ShowServiceUI {
 				for (int i : vals) {
 
 					try {
-						Service service = serviceCtr
-								.findByBarcode(Integer
-										.parseInt(table
-												.getValueAt(i,
-														0)
-												.toString()));
+						Service service = serviceCtr.findByBarcode(Integer.parseInt(table.getValueAt(i, 0).toString()));
 						int barcode = service.getBarcode();
 						serviceCtr.deleteService(barcode);
 					} catch (Exception e1) {
@@ -185,7 +161,7 @@ public class ShowServiceUI {
 			}
 
 		});
-		btnDelete.setBounds(739, 380, 89, 23);
+		btnDelete.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnDelete);
 
 		contentPanel.invalidate();
@@ -193,7 +169,5 @@ public class ShowServiceUI {
 		contentPanel.repaint();
 		contentPanel.setVisible(true);
 
-
-
-}
+	}
 }

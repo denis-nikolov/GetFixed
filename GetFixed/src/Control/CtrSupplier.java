@@ -75,4 +75,39 @@ public class CtrSupplier {
 		}
 	}
 
+        public Object[] addSupplierById(int id) {
+		Supplier supplier = findById(id);
+		Object[] object = null;
+		object = new Object[] { supplier.getId(), supplier.getName(),
+				supplier.getSurname(), supplier.getAddress(),
+				supplier.getTelephone(), supplier.getEmail()};
+
+		return object;
+	}
+
+	public Object[] addSupplierByName(String name) {
+		Supplier supplier = findByName(name);
+		Object[] object = null;
+		object = new Object[] { supplier.getId(), supplier.getName(),
+				supplier.getSurname(), supplier.getAddress(),
+				supplier.getTelephone(), supplier.getEmail()
+				 };
+
+		return object;
+	}
+
+	
+	public ArrayList<Object[]> addAllSuppliers() {
+		ArrayList<Supplier> supplierList = findAllSuppliers();
+		Object[] object = null;
+		ArrayList<Object[]> objectArray = new ArrayList<Object[]>();
+		for (Supplier supplier : supplierList) {
+			object = new Object[] { supplier.getId(), supplier.getName(),
+					supplier.getSurname(), supplier.getAddress(),
+					supplier.getTelephone(), supplier.getEmail()};
+			objectArray.add(object);
+		}
+		return objectArray;
+	}
+
 }

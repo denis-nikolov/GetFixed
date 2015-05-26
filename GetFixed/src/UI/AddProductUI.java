@@ -116,7 +116,7 @@ public class AddProductUI {
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -128,7 +128,7 @@ public class AddProductUI {
 				model.addRow(new Object[] { null, null, null, null, null, null, null, null, null, null, 0, null });
 			}
 		});
-		btnAdd.setBounds(625, 11, 89, 23);
+		btnAdd.setBounds(625 + functionalityCtr.getAddWidth(), 11, 89, 23);
 		contentPanel.add(btnAdd);
 
 		JButton btnRemove = new JButton("Remove row");
@@ -140,7 +140,7 @@ public class AddProductUI {
 				}
 			}
 		});
-		btnRemove.setBounds(720, 11, 105, 23);
+		btnRemove.setBounds(720 + functionalityCtr.getAddWidth(), 11, 105, 23);
 		contentPanel.add(btnRemove);
 
 		JButton btnSubmit = new JButton("Submit");
@@ -175,7 +175,7 @@ public class AddProductUI {
 
 			}
 		});
-		btnSubmit.setBounds(530, 355, 89, 23);
+		btnSubmit.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();

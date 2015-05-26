@@ -75,4 +75,39 @@ public class CtrDepartment {
 		}
 	}
 
+        public Object[] addDepartmentById(int id) {
+		Department department = findById(id);
+		Object[] object = null;
+		object = new Object[] { department.getId(), department.getName(),
+				 department.getAddress(), department.getLocation(),
+				department.getTelephone(), department.getEmail()};
+
+		return object;
+	}
+
+	public Object[] addDepartmentByName(String name) {
+		Department department = findByName(name);
+		Object[] object = null;
+		object = new Object[] { department.getId(), department.getName(),
+				 department.getAddress(),department.getLocation(),
+				department.getTelephone(), department.getEmail()
+				 };
+
+		return object;
+	}
+
+	
+	public ArrayList<Object[]> addAllDepartments() {
+		ArrayList<Department> departmentList = findAllDepartments();
+		Object[] object = null;
+		ArrayList<Object[]> objectArray = new ArrayList<Object[]>();
+		for (Department department : departmentList) {
+			object = new Object[] { department.getId(), department.getName(),
+					 department.getAddress(),department.getLocation(),
+					department.getTelephone(), department.getEmail()};
+			objectArray.add(object);
+		}
+		return objectArray;
+	}
+
 }

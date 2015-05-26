@@ -38,9 +38,6 @@ public class EndLeaseUI {
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		table = new JTable();
-		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-
 		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null } }, new String[] { "ID",
 				"Date", "Customer", "Period", "Returned", "Department", "Price" }) {
 			Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class, Integer.class,
@@ -58,7 +55,7 @@ public class EndLeaseUI {
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -72,7 +69,7 @@ public class EndLeaseUI {
 				}
 			}
 		});
-		btnRemove.setBounds(590, 11, 105, 25);
+		btnRemove.setBounds(590 + functionalityCtr.getAddWidth(), 11, 105, 25);
 		contentPanel.add(btnRemove);
 		
 		JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
@@ -252,7 +249,7 @@ public class EndLeaseUI {
 		contentPanel.add(btnSearch);
 
 		JButton btnShowProducts = new JButton("Show items");
-		btnShowProducts.setBounds(705, 11, 120, 25);
+		btnShowProducts.setBounds(705 + functionalityCtr.getAddWidth(), 11, 120, 25);
 		btnShowProducts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -299,7 +296,7 @@ public class EndLeaseUI {
 			}
 
 		});
-		btnReturnLease.setBounds(717, 355, 110, 23);
+		btnReturnLease.setBounds(717 + functionalityCtr.getAddWidth(), 355, 110, 23);
 		contentPanel.add(btnReturnLease);
 
 		contentPanel.invalidate();

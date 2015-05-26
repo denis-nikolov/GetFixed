@@ -42,17 +42,15 @@ public class CtrProduct {
 		return dbProduct.searchProductByBarcodeAndDepartmentId(barcode, departmentId, true);
 	}
 
-	public Product findByBarcodeAndDepartmentLocation(int barcode, String departmentLocation) {
+	public Product findByBarcodeAndDepartmentName(int barcode, String departmentName) {
+		ArrayList<Department> departmentList = departmentCtr.findAllDepartments();
 		int departmentId = 0;
-		if (departmentLocation.equals("Aalborg")) {
-			departmentId = 1;
-		} else if (departmentLocation.equals("Aarhus")) {
-			departmentId = 2;
-		} else if (departmentLocation.equals("Odense")) {
-			departmentId = 3;
-		} else if (departmentLocation.equals("Copenhagen")) {
-			departmentId = 4;
+		for (Department department : departmentList) {
+			if (department.getName().equals(departmentName)) {
+				departmentId = department.getId();
+			}
 		}
+
 		Product product = findByBarcodeAndDepartmentId(barcode, departmentId);
 		return product;
 	}
@@ -89,7 +87,7 @@ public class CtrProduct {
 		}
 	}
 
-	public int recalculateProAmount(int barcode, int amount, int departmentId) {
+	public int saleProductCalculation(int barcode, int amount, int departmentId) {
 		IFDBProduct dbProduct = new DBProduct();
 
 		Product product = new Product();
@@ -97,21 +95,46 @@ public class CtrProduct {
 
 		int newAmount = (product.getAmount() - amount);
 		product.setAmount(newAmount);
-		if (!isLeasable(product)) {
-			if (product.getAmount() < product.getMinAmount()) {
-				double price = (product.getOrderingPrice() * product.getOrderAmount());
-				int orderAmount = (product.getMaxAmount() - product.getAmount()) - product.getOrderAmount();
 
-				CtrOrder orderCtr = new CtrOrder();
-				orderCtr.insertOrder(barcode, product.getName(), product.getOrderingPrice(), orderAmount, price);
-
-				product.setOrderAmount(product.getMaxAmount() - product.getAmount());
+		if (product.getAmount() < product.getMinAmount()) {
+			int orderAmount = (product.getMaxAmount() - product.getAmount()) - product.getOrderAmount();
+			double price = (product.getOrderingPrice() * orderAmount);
+			CtrOrder orderCtr = new CtrOrder();
+			try {
+				orderCtr.insertOrder(barcode, orderAmount, price, product.getDepartment().getId());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			product.setOrderAmount(product.getMaxAmount() - product.getAmount());
 		}
 		return dbProduct.recalculateProductAmount(product);
 	}
 	
-	public int returnProduct(int barcode, int amount, int departmentId){
+	public int leaseProductCalculation(int barcode, int amount, int departmentId) {
+		IFDBProduct dbProduct = new DBProduct();
+
+		Product product = new Product();
+		product = findByBarcodeAndDepartmentId(barcode, departmentId);
+
+		int newAmount = (product.getAmount() - amount);
+		product.setAmount(newAmount);
+
+		return dbProduct.recalculateProductAmount(product);
+	}
+	
+	public int orderProductCalculation(int barcode, int amount, int departmentId) {
+		IFDBProduct dbProduct = new DBProduct();
+
+		Product product = new Product();
+		product = findByBarcodeAndDepartmentId(barcode, departmentId);
+
+		int newOrderAmount = (product.getOrderAmount() + amount);
+		product.setOrderAmount(newOrderAmount);
+
+		return dbProduct.recalculateProductAmount(product);
+	}
+
+	public int returnProductCalculation(int barcode, int amount, int departmentId) {
 		IFDBProduct dbProduct = new DBProduct();
 
 		Product product = new Product();
@@ -119,7 +142,22 @@ public class CtrProduct {
 
 		int newAmount = (product.getAmount() + amount);
 		product.setAmount(newAmount);
-		
+
+		return dbProduct.recalculateProductAmount(product);
+	}
+
+	public int receiveProductCalculation(int barcode, int amount, int departmentId) {
+		IFDBProduct dbProduct = new DBProduct();
+
+		Product product = new Product();
+		product = findByBarcodeAndDepartmentId(barcode, departmentId);
+
+		int newAmount = (product.getAmount() + amount);
+		product.setAmount(newAmount);
+
+		int newOrderAmount = (product.getOrderAmount() - amount);
+		product.setOrderAmount(newOrderAmount);
+
 		return dbProduct.recalculateProductAmount(product);
 	}
 
@@ -195,7 +233,7 @@ public class CtrProduct {
 			object = new Object[] { product.getBarcode(), product.getName(), product.getSellingPrice(),
 					product.getLeasingPrice(), product.getOrderingPrice(), product.getPriceForDiscount(),
 					product.getAmountForDiscount(), product.getAmount(), product.getMinAmount(),
-					product.getMaxAmount(), product.getOrderAmount(), product.getDepartment().getLocation(),
+					product.getMaxAmount(), product.getOrderAmount(), product.getDepartment().getName(),
 					product.getSupplier().getId() };
 			objectArray.add(object);
 		}
@@ -210,7 +248,7 @@ public class CtrProduct {
 			object = new Object[] { product.getBarcode(), product.getName(), product.getSellingPrice(),
 					product.getLeasingPrice(), product.getOrderingPrice(), product.getPriceForDiscount(),
 					product.getAmountForDiscount(), product.getAmount(), product.getMinAmount(),
-					product.getMaxAmount(), product.getOrderAmount(), product.getDepartment().getLocation(),
+					product.getMaxAmount(), product.getOrderAmount(), product.getDepartment().getName(),
 					product.getSupplier().getId() };
 			objectArray.add(object);
 		}
@@ -223,7 +261,7 @@ public class CtrProduct {
 		object = new Object[] { product.getBarcode(), product.getName(), product.getSellingPrice(),
 				product.getLeasingPrice(), product.getOrderingPrice(), product.getPriceForDiscount(),
 				product.getAmountForDiscount(), product.getAmount(), product.getMinAmount(), product.getMaxAmount(),
-				product.getOrderAmount(), product.getDepartment().getLocation(), product.getSupplier().getId() };
+				product.getOrderAmount(), product.getDepartment().getName(), product.getSupplier().getId() };
 
 		return object;
 	}
@@ -234,7 +272,7 @@ public class CtrProduct {
 		object = new Object[] { product.getBarcode(), product.getName(), product.getSellingPrice(),
 				product.getLeasingPrice(), product.getOrderingPrice(), product.getPriceForDiscount(),
 				product.getAmountForDiscount(), product.getAmount(), product.getMinAmount(), product.getMaxAmount(),
-				product.getOrderAmount(), product.getDepartment().getLocation(), product.getSupplier().getId() };
+				product.getOrderAmount(), product.getDepartment().getName(), product.getSupplier().getId() };
 
 		return object;
 	}

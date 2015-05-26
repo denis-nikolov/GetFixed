@@ -103,29 +103,29 @@ public class DBPartLease implements IFDBPartLease {
 		return partObj;
 	}
 
-	private PartLease singleWhere(String wClause, boolean retrieveAssociation) {
-		ResultSet results;
-		PartLease partObj = new PartLease();
-
-		String query = buildQuery(wClause);
-		System.out.println(query);
-		try {
-			Statement stmt = con.createStatement();
-			stmt.setQueryTimeout(5);
-			results = stmt.executeQuery(query);
-
-			if (results.next()) {
-				partObj = buildPartLease(results);
-				stmt.close();
-
-			} else {
-				partObj = null;
-			}
-		} catch (Exception e) {
-			System.out.println("Query exception: " + e);
-		}
-		return partObj;
-	}
+//	private PartLease singleWhere(String wClause, boolean retrieveAssociation) {
+//		ResultSet results;
+//		PartLease partObj = new PartLease();
+//
+//		String query = buildQuery(wClause);
+//		System.out.println(query);
+//		try {
+//			Statement stmt = con.createStatement();
+//			stmt.setQueryTimeout(5);
+//			results = stmt.executeQuery(query);
+//
+//			if (results.next()) {
+//				partObj = buildPartLease(results);
+//				stmt.close();
+//
+//			} else {
+//				partObj = null;
+//			}
+//		} catch (Exception e) {
+//			System.out.println("Query exception: " + e);
+//		}
+//		return partObj;
+//	}
 
 	@Override
 	public int deletePartLease(int leaseId) {

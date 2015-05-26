@@ -40,14 +40,11 @@ public class CreateSaleUI {
 	private JPanel secondaryMenuPanel;
 	CtrProduct productCtr = new CtrProduct();
 	CtrDepartment departmentCtr = new CtrDepartment();
-	CtrSupplier supplierCtr = new CtrSupplier();
 	CtrEmployee employeeCtr = new CtrEmployee();
 	CtrCustomer customerCtr = new CtrCustomer();
 	CtrService serviceCtr = new CtrService();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
 	CtrSale saleCtr = new CtrSale();
-	CtrOrder orderCtr = new CtrOrder();
-	ArrayList<String> saleID = new ArrayList<>();
 
 	CreateSaleUI(JPanel contentPanel, JPanel secondaryMenuPanel) {
 		this.contentPanel = contentPanel;
@@ -79,6 +76,13 @@ public class CreateSaleUI {
 				return canEdit[columnIndex];
 			}
 		});
+
+		table.setBounds(10, 27, 588, 195);
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
+		table.setFillsViewportHeight(true);
+		contentPanel.add(scrollPane);
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		
 		JRadioButton rdbtnAalborg = new JRadioButton("Aalborg");
 		JRadioButton rdbtnAarhus = new JRadioButton("Aarhus");
@@ -147,29 +151,22 @@ public class CreateSaleUI {
 		});
 		contentPanel.add(rdbtnCopenhagen);
 
-		table.setBounds(10, 27, 588, 195);
-		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
-		table.setFillsViewportHeight(true);
-		contentPanel.add(scrollPane);
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				model.addRow(new Object[] { null, null, null, null, null });
 			}
 		});
-		btnAdd.setBounds(625, 11, 89, 23);
+		btnAdd.setBounds(625 + functionalityCtr.getAddWidth(), 11, 89, 23);
 		contentPanel.add(btnAdd);
 
 		JLabel lblTotalPrice = new JLabel("Total price:");
 		lblTotalPrice.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblTotalPrice.setBounds(556, 355, 72, 23);
+		lblTotalPrice.setBounds(556 + functionalityCtr.getAddWidth(), 355, 72, 23);
 		contentPanel.add(lblTotalPrice);
 
 		JTextField textFieldPrice = new JTextField();
-		textFieldPrice.setBounds(638, 355, 86, 23);
+		textFieldPrice.setBounds(638 + functionalityCtr.getAddWidth(), 355, 86, 23);
 		textFieldPrice.setEditable(false);
 		contentPanel.add(textFieldPrice);
 		textFieldPrice.setText("0.0");
@@ -224,7 +221,7 @@ public class CreateSaleUI {
 				}
 			}
 		});
-		btnRemove.setBounds(720, 11, 105, 23);
+		btnRemove.setBounds(720 + functionalityCtr.getAddWidth(), 11, 105, 23);
 		contentPanel.add(btnRemove);
 
 		JRadioButton rdbtnNotAMember = new JRadioButton("Not a member");
@@ -350,8 +347,8 @@ public class CreateSaleUI {
 				int[] vals = table.getSelectedRows();
 				String products = "";
 				products += "\n#####################\n";
-				products += "Sale Id:" + saleId + "\nCustomer Id:" + textFieldCustomer.getText();
-
+				products += "Sale ID: " + saleId + "\nCustomer ID: " + textFieldCustomer.getText();
+                products += "/nSale date: " + saleCtr.findById(saleId).getDate();
 				// +"\nEployee Id:" + saleCtr.findById(saleId).get ;
 				products += "\n#####################\n";
 				for (int i = 0; i < vals.length; i++) {
@@ -377,9 +374,9 @@ public class CreateSaleUI {
 
 				}
 				products += "\n\n";
-				products += "Personal discount:"
+				products += "Personal discount: "
 						+ customerCtr.findById(Integer.parseInt(textFieldCustomer.getText())).getDiscount() + "% \n";
-				products += "TOTAL: " + textFieldPrice.getText() + "DKK";
+				products += "TOTAL: " + textFieldPrice.getText() + " DKK";
 				Sale trySale = saleCtr.findById(saleId);
 				if (trySale != null) {
 					JOptionPane.showMessageDialog(null, "Sale submitted!\n" + products, "Sale confirmation!",
@@ -387,7 +384,7 @@ public class CreateSaleUI {
 				}
 			}
 		});
-		btnSubmit.setBounds(738, 355, 89, 23);
+		btnSubmit.setBounds(738 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();

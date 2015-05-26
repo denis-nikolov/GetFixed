@@ -8,23 +8,27 @@ public class Order {
 	private int id;
 	private String date;
 	private Product product;
+	private Department department;
 	private String productName;
 	private double pricePerPiece;
 	private int amount;
 	private double price;
+	private boolean received;
 	
 	public Order(){
 		
 	}
 	
-	public Order(int id, Product product, String productName, double pricePerPiece, int amount){
+	public Order(int id, Product product, Department department, int amount){
 		this.id = id;
 		date = createDate();
 		this.product = product;
+		this.department = department;
 		productName = getProduct().getName();
 		pricePerPiece = getProduct().getOrderingPrice();
 		this.amount = amount;
 	    price = getPrice();
+	    received = false;
 	}
 
 	public int getId() {
@@ -88,6 +92,22 @@ public class Order {
 
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+
+	public boolean isReceived() {
+		return received;
+	}
+
+	public void setReceived(boolean received) {
+		this.received = received;
+	}
+
+	public Department getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
 
 }

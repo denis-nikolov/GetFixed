@@ -12,7 +12,6 @@ import Control.*;
 import Model.Department;
 
 public class AddCustomerUI {
-	private JPanel contentPane;
 	private JPanel mainMenuPanel;
 	private JPanel secondaryMenuPanel;
 	private JPanel contentPanel;
@@ -52,7 +51,7 @@ public class AddCustomerUI {
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -64,7 +63,7 @@ public class AddCustomerUI {
 				model.addRow(new Object[] { null, null, null, null, null });
 			}
 		});
-		btnAdd.setBounds(635, 11, 89, 23);
+		btnAdd.setBounds(635 + functionalityCtr.getAddWidth(), 11, 89, 23);
 		contentPanel.add(btnAdd);
 
 		JButton btnRemove = new JButton("Remove");
@@ -76,7 +75,7 @@ public class AddCustomerUI {
 				}
 			}
 		});
-		btnRemove.setBounds(739, 11, 89, 23);
+		btnRemove.setBounds(739 + functionalityCtr.getAddWidth(), 11, 89, 23);
 		contentPanel.add(btnRemove);
 
 		JButton btnSubmit = new JButton("Submit");
@@ -104,7 +103,7 @@ public class AddCustomerUI {
 
 			}
 		});
-		btnSubmit.setBounds(530, 355, 89, 23);
+		btnSubmit.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();

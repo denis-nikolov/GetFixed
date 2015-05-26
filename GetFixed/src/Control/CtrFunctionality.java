@@ -6,12 +6,14 @@ public class CtrFunctionality {
 	private ArrayList<Integer> ids = new ArrayList<Integer>();
 	private int clicks = 0;
 	private int departmentId;
+	private int addWidth;
 	private ArrayList<String> values = new ArrayList<String>();
 	private ArrayList<String> saleId = new ArrayList<String>();
 	private ArrayList<String> leaseId = new ArrayList<String>();
 	private boolean product;
 
 	public CtrFunctionality() {
+		addWidth = 200;
 	}
 
 	public ArrayList<Integer> getIds() {
@@ -97,5 +99,13 @@ public class CtrFunctionality {
 
 	public void setDepartmentId(int departmentId) {
 		this.departmentId = departmentId;
+	}
+
+	public int getAddWidth() {
+		return addWidth;
+	}
+
+	public void setAddWidth(int addWidth) {
+		this.addWidth = addWidth;
 	}
 }

@@ -50,7 +50,7 @@ public class ShowSaleUI {
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -236,7 +236,7 @@ public class ShowSaleUI {
 		contentPanel.add(btnSearch);
 
 		JButton btnShowProducts = new JButton("Show items");
-		btnShowProducts.setBounds(705, 11, 120, 25);
+		btnShowProducts.setBounds(705 + functionalityCtr.getAddWidth(), 11, 120, 25);
 		btnShowProducts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -268,9 +268,6 @@ public class ShowSaleUI {
 				for (int i : vals) {
 
 					try {
-						saleCtr.deletePartSale(Integer.parseInt(table.getValueAt(i, 0).toString()));
-						// ic.deleteInvoice(Integer.parseInt(table
-						// .getValueAt(i, 0).toString()));
 						saleCtr.deleteSale(Integer.parseInt(table.getValueAt(i, 0).toString()));
 					} catch (Exception e1) {
 						e1.printStackTrace();
@@ -284,7 +281,7 @@ public class ShowSaleUI {
 			}
 
 		});
-		btnDelete.setBounds(739, 380, 89, 23);
+		btnDelete.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnDelete);
 
 		contentPanel.invalidate();

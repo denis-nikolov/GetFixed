@@ -15,8 +15,7 @@ public class PartSale {
 
 	}
 
-	public PartSale(Sale sale, Product product, double pricePerPiece,
-			int amount, int price) {
+	public PartSale(Sale sale, Product product, double pricePerPiece, int amount, int price) {
 		this.setSale(sale);
 		this.setProduct(product);
 		barcode = getProduct().getBarcode();
@@ -25,9 +24,8 @@ public class PartSale {
 		this.setPricePerPiece(pricePerPiece);
 		this.setPrice(price);
 	}
-	
-	public PartSale(Sale sale, Service service, double pricePerPiece,
-			int amount, int price) {
+
+	public PartSale(Sale sale, Service service, double pricePerPiece, int amount, int price) {
 		this.setSale(sale);
 		this.setService(service);
 		barcode = getService().getBarcode();
@@ -101,5 +99,4 @@ public class PartSale {
 		this.price = price;
 	}
 
-	
 }

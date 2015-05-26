@@ -55,7 +55,7 @@ public class StartLeaseUI {
 
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -133,16 +133,16 @@ public class StartLeaseUI {
 				model.addRow(new Object[] { null, null, null, null, null });
 			}
 		});
-		btnAdd.setBounds(625, 8, 89, 23);
+		btnAdd.setBounds(625 + functionalityCtr.getAddWidth(), 8, 89, 23);
 		contentPanel.add(btnAdd);
 
 		JLabel lblTotalPrice = new JLabel("Total price:");
 		lblTotalPrice.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblTotalPrice.setBounds(556, 355, 72, 23);
+		lblTotalPrice.setBounds(556 + functionalityCtr.getAddWidth(), 355, 72, 23);
 		contentPanel.add(lblTotalPrice);
 
 		JTextField textFieldPrice = new JTextField();
-		textFieldPrice.setBounds(638, 355, 86, 23);
+		textFieldPrice.setBounds(638 + functionalityCtr.getAddWidth(), 355, 86, 23);
 		textFieldPrice.setEditable(false);
 		contentPanel.add(textFieldPrice);
 		textFieldPrice.setText("0.0");
@@ -206,7 +206,7 @@ public class StartLeaseUI {
 				}
 			}
 		});
-		btnRemove.setBounds(720, 8, 105, 23);
+		btnRemove.setBounds(720 + functionalityCtr.getAddWidth(), 8, 105, 23);
 		contentPanel.add(btnRemove);
 
 		JRadioButton rdbtnNotAMember = new JRadioButton("Not a member");
@@ -318,6 +318,12 @@ public class StartLeaseUI {
 
 				table.selectAll();
 				int[] vals = table.getSelectedRows();
+				String products = "";
+				products += "\n#####################\n";
+				products += "Lease ID: " + leaseId + "\nCustomer ID: " + textFieldCustomer.getText();
+                products += "\nLease date: " + leaseCtr.findById(leaseId).getDate();
+                products += "\nLease period: " + leaseCtr.findById(leaseId).getPeriod();
+				products += "\n#####################\n";
 				for (int i = 0; i < vals.length; i++) {
 					for (int x = 0; x < table.getColumnCount(); x++) {
 						functionalityCtr.addValue(table.getValueAt(i, x).toString());
@@ -328,16 +334,30 @@ public class StartLeaseUI {
 						leaseCtr.insertPartLease(leaseId, Integer.parseInt(values.get(0)), values.get(1),
 								Double.parseDouble(values.get(2)), Integer.parseInt(values.get(3)),
 								Double.parseDouble(values.get(4)));
+						
+						products += "Barcode: " + (values.get(0)) + "     Name: " + values.get(1) + "     Price/pc: "
+								+ Double.parseDouble(values.get(2)) + "     Quantity: "
+								+ Integer.parseInt(values.get(3)) + "     Total: " + Double.parseDouble(values.get(4))
+								+ "\n";
 
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
 					functionalityCtr.removeAllValues();
 				}
+				products += "\n\n";
+				products += "Personal discount: "
+						+ customerCtr.findById(Integer.parseInt(textFieldCustomer.getText())).getDiscount() + "% \n";
+				products += "TOTAL: " + textFieldPrice.getText() + " DKK";
+				Lease tryLease = leaseCtr.findById(leaseId);
+				if (tryLease != null) {
+					JOptionPane.showMessageDialog(null, "Lease submitted!\n" + products, "Lease confirmation!",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
 
 			}
 		});
-		btnSubmit.setBounds(738, 355, 89, 23);
+		btnSubmit.setBounds(738 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();

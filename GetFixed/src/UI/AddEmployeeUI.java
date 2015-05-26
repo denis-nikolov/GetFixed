@@ -27,16 +27,9 @@ public class AddEmployeeUI {
 	private JTable table;
 	private JPanel contentPanel;
 	private JPanel secondaryMenuPanel;
-	CtrProduct productCtr = new CtrProduct();
 	CtrDepartment departmentCtr = new CtrDepartment();
-	CtrSupplier supplierCtr = new CtrSupplier();
 	CtrEmployee employeeCtr = new CtrEmployee();
-	CtrCustomer customerCtr = new CtrCustomer();
-	CtrService serviceCtr = new CtrService();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
-	CtrSale saleCtr = new CtrSale();
-	CtrOrder orderCtr = new CtrOrder();
-	ArrayList<String> saleID = new ArrayList<>();
 	protected Department department;
 	
 	AddEmployeeUI(JPanel contentPanel,JPanel secondaryMenuPanel){
@@ -146,7 +139,7 @@ public class AddEmployeeUI {
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table
@@ -159,7 +152,7 @@ public class AddEmployeeUI {
 						null, null, null });
 			}
 		});
-		btnAdd.setBounds(635, 11, 89, 23);
+		btnAdd.setBounds(635 + functionalityCtr.getAddWidth(), 11, 89, 23);
 		contentPanel.add(btnAdd);
 
 		JButton btnRemove = new JButton("Remove");
@@ -171,7 +164,7 @@ public class AddEmployeeUI {
 				}
 			}
 		});
-		btnRemove.setBounds(739, 11, 89, 23);
+		btnRemove.setBounds(739 + functionalityCtr.getAddWidth(), 11, 89, 23);
 		contentPanel.add(btnRemove);
 
 		JButton btnSubmit = new JButton("Submit");
@@ -208,7 +201,7 @@ public class AddEmployeeUI {
 
 			}
 		});
-		btnSubmit.setBounds(530, 355, 89, 23);
+		btnSubmit.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnSubmit);
 
 		contentPanel.invalidate();

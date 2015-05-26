@@ -102,29 +102,29 @@ public class DBPartSale implements IFDBPartSale {
 		return partObj;
 	}
 
-	private PartSale singleWhere(String wClause, boolean retrieveAssociation) {
-		ResultSet results;
-		PartSale partObj = new PartSale();
-
-		String query = buildQuery(wClause);
-		System.out.println(query);
-		try {
-			Statement stmt = con.createStatement();
-			stmt.setQueryTimeout(5);
-			results = stmt.executeQuery(query);
-
-			if (results.next()) {
-				partObj = buildPartSale(results);
-				stmt.close();
-
-			} else {
-				partObj = null;
-			}
-		} catch (Exception e) {
-			System.out.println("Query exception: " + e);
-		}
-		return partObj;
-	}
+//	private PartSale singleWhere(String wClause, boolean retrieveAssociation) {
+//		ResultSet results;
+//		PartSale partObj = new PartSale();
+//
+//		String query = buildQuery(wClause);
+//		System.out.println(query);
+//		try {
+//			Statement stmt = con.createStatement();
+//			stmt.setQueryTimeout(5);
+//			results = stmt.executeQuery(query);
+//
+//			if (results.next()) {
+//				partObj = buildPartSale(results);
+//				stmt.close();
+//
+//			} else {
+//				partObj = null;
+//			}
+//		} catch (Exception e) {
+//			System.out.println("Query exception: " + e);
+//		}
+//		return partObj;
+//	}
 
 	@Override
 	public int deletePartSale(int saleId) {

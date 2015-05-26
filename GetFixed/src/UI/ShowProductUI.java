@@ -59,7 +59,7 @@ public class ShowProductUI {
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -73,7 +73,7 @@ public class ShowProductUI {
 				}
 			}
 		});
-		btnRemove.setBounds(720, 11, 105, 23);
+		btnRemove.setBounds(720 + functionalityCtr.getAddWidth(), 11, 105, 23);
 		contentPanel.add(btnRemove);
 
 		model.removeRow(0);
@@ -289,7 +289,7 @@ public class ShowProductUI {
 				}
 			}
 		});
-		btnUpdate.setBounds(639, 380, 89, 23);
+		btnUpdate.setBounds(639 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnUpdate);
 
 		JButton btnDelete = new JButton("Delete");
@@ -301,7 +301,7 @@ public class ShowProductUI {
 				for (int i : vals) {
 
 					try {
-						Product product = productCtr.findByBarcodeAndDepartmentLocation(
+						Product product = productCtr.findByBarcodeAndDepartmentName(
 								Integer.parseInt(table.getValueAt(i, 0).toString()), table.getValueAt(i, 11).toString());
 						int barcode = product.getBarcode();
 						int departmentId = product.getDepartment().getId();
@@ -316,7 +316,7 @@ public class ShowProductUI {
 			}
 
 		});
-		btnDelete.setBounds(739, 380, 89, 23);
+		btnDelete.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnDelete);
 
 		contentPanel.invalidate();

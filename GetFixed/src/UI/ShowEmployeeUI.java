@@ -31,26 +31,18 @@ public class ShowEmployeeUI {
 	private JPanel secondaryMenuPanel;
 	private JTextField txtSearch;
 	private JButton btnShowEmployee;
-	CtrProduct productCtr = new CtrProduct();
 	CtrDepartment departmentCtr = new CtrDepartment();
-	CtrSupplier supplierCtr = new CtrSupplier();
 	CtrEmployee employeeCtr = new CtrEmployee();
-	CtrCustomer customerCtr = new CtrCustomer();
-	CtrService serviceCtr = new CtrService();
 	CtrFunctionality functionalityCtr = new CtrFunctionality();
-	CtrSale saleCtr = new CtrSale();
-	CtrOrder orderCtr = new CtrOrder();
-	ArrayList<String> saleID = new ArrayList<>();
 	protected Department department;
-	
-	ShowEmployeeUI(JPanel contentPanel,JPanel secondaryMenuPanel, JButton btnShowEmployee){
+
+	ShowEmployeeUI(JPanel contentPanel, JPanel secondaryMenuPanel, JButton btnShowEmployee) {
 		this.contentPanel = contentPanel;
 		this.secondaryMenuPanel = secondaryMenuPanel;
 		this.btnShowEmployee = btnShowEmployee;
 	}
-	
-	
-	void make(){
+
+	void make() {
 		contentPanel.removeAll();
 
 		functionalityCtr.removeAllIds();
@@ -58,36 +50,27 @@ public class ShowEmployeeUI {
 
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		table.setModel(new DefaultTableModel(
-				new Object[][] { { null, null, null, null,
-						null, null, null, null } },
-				new String[] { "ID", "Name", "Surname",
-						"Address", "Telephone", "E-mail",
-						"Password", "Department" }) {
-			Class[] columnTypes = new Class[] { Integer.class,
-					String.class, String.class, String.class,
-					String.class, String.class, String.class,
-					String.class };
+		table.setModel(new DefaultTableModel(new Object[][] { { null, null, null, null, null, null, null, null } },
+				new String[] { "ID", "Name", "Surname", "Address", "Telephone", "E-mail", "Password", "Department" }) {
+			Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, String.class, String.class,
+					String.class, String.class, String.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 
-			boolean[] canEdit = new boolean[] { false, true,
-					true, true, true, true, true, true };
+			boolean[] canEdit = new boolean[] { false, true, true, true, true, true, true, true };
 
-			public boolean isCellEditable(int rowIndex,
-					int columnIndex) {
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];
 			}
 		});
 		table.setBounds(10, 27, 588, 195);
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(10, 52, 818, 300);
+		scrollPane.setBounds(10, 52, 818 + functionalityCtr.getAddWidth(), 300);
 		table.setFillsViewportHeight(true);
 		contentPanel.add(scrollPane);
-		DefaultTableModel model = (DefaultTableModel) table
-				.getModel();
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
 
 		JButton btnRemove = new JButton("Remove row");
 		btnRemove.addActionListener(new ActionListener() {
@@ -98,7 +81,7 @@ public class ShowEmployeeUI {
 				}
 			}
 		});
-		btnRemove.setBounds(720, 11, 105, 23);
+		btnRemove.setBounds(720 + functionalityCtr.getAddWidth(), 11, 105, 23);
 		contentPanel.add(btnRemove);
 
 		model.removeRow(0);
@@ -112,8 +95,7 @@ public class ShowEmployeeUI {
 		rdbtnAalborg.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				department = departmentCtr
-						.findByName(rdbtnAalborg.getText());
+				department = departmentCtr.findByName(rdbtnAalborg.getText());
 				int departmentId = department.getId();
 
 				if (rdbtnAalborg.isSelected()) {
@@ -121,29 +103,23 @@ public class ShowEmployeeUI {
 					functionalityCtr.addClick();
 
 					if (functionalityCtr.getClicks() <= 1) {
-						model.getDataVector()
-								.removeAllElements();
+						model.getDataVector().removeAllElements();
 						model.fireTableDataChanged();
 					}
 
-					for (Object[] object : employeeCtr
-							.addAllEmployeesForDepartment(departmentId)) {
+					for (Object[] object : employeeCtr.addAllEmployeesForDepartment(departmentId)) {
 						model.addRow(object);
 					}
 				} else {
 					functionalityCtr.removeId(departmentId);
-					for (int rows = 0; rows < table
-							.getRowCount(); rows++) {
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
 						ArrayList<String> values = new ArrayList<>();
-						for (int columns = 0; columns < table
-								.getColumnCount(); columns++) {
-							values.add(table.getValueAt(rows,
-									columns).toString());
+						for (int columns = 0; columns < table.getColumnCount(); columns++) {
+							values.add(table.getValueAt(rows, columns).toString());
 						}
 						String departmentName = values.get(7);
 						values.clear();
-						if (departmentName.equals(rdbtnAalborg
-								.getText())) {
+						if (departmentName.equals(rdbtnAalborg.getText())) {
 							model.removeRow(rows);
 							rows--;
 						}
@@ -158,8 +134,7 @@ public class ShowEmployeeUI {
 		rdbtnAarhus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				department = departmentCtr
-						.findByName(rdbtnAarhus.getText());
+				department = departmentCtr.findByName(rdbtnAarhus.getText());
 				int departmentId = department.getId();
 
 				if (rdbtnAarhus.isSelected()) {
@@ -167,29 +142,23 @@ public class ShowEmployeeUI {
 					functionalityCtr.addClick();
 
 					if (functionalityCtr.getClicks() <= 1) {
-						model.getDataVector()
-								.removeAllElements();
+						model.getDataVector().removeAllElements();
 						model.fireTableDataChanged();
 					}
 
-					for (Object[] object : employeeCtr
-							.addAllEmployeesForDepartment(departmentId)) {
+					for (Object[] object : employeeCtr.addAllEmployeesForDepartment(departmentId)) {
 						model.addRow(object);
 					}
 				} else {
 					functionalityCtr.removeId(departmentId);
-					for (int rows = 0; rows < table
-							.getRowCount(); rows++) {
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
 						ArrayList<String> values = new ArrayList<>();
-						for (int columns = 0; columns < table
-								.getColumnCount(); columns++) {
-							values.add(table.getValueAt(rows,
-									columns).toString());
+						for (int columns = 0; columns < table.getColumnCount(); columns++) {
+							values.add(table.getValueAt(rows, columns).toString());
 						}
 						String departmentName = values.get(7);
 						values.clear();
-						if (departmentName.equals(rdbtnAarhus
-								.getText())) {
+						if (departmentName.equals(rdbtnAarhus.getText())) {
 							model.removeRow(rows);
 							rows--;
 						}
@@ -204,8 +173,7 @@ public class ShowEmployeeUI {
 		rdbtnOdense.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				department = departmentCtr
-						.findByName(rdbtnOdense.getText());
+				department = departmentCtr.findByName(rdbtnOdense.getText());
 				int departmentId = department.getId();
 
 				if (rdbtnOdense.isSelected()) {
@@ -213,28 +181,22 @@ public class ShowEmployeeUI {
 					functionalityCtr.addClick();
 
 					if (functionalityCtr.getClicks() <= 1) {
-						model.getDataVector()
-								.removeAllElements();
+						model.getDataVector().removeAllElements();
 						model.fireTableDataChanged();
 					}
 
-					for (Object[] object : employeeCtr
-							.addAllEmployeesForDepartment(departmentId)) {
+					for (Object[] object : employeeCtr.addAllEmployeesForDepartment(departmentId)) {
 						model.addRow(object);
 					}
 				} else {
-					for (int rows = 0; rows < table
-							.getRowCount(); rows++) {
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
 						ArrayList<String> values = new ArrayList<>();
-						for (int columns = 0; columns < table
-								.getColumnCount(); columns++) {
-							values.add(table.getValueAt(rows,
-									columns).toString());
+						for (int columns = 0; columns < table.getColumnCount(); columns++) {
+							values.add(table.getValueAt(rows, columns).toString());
 						}
 						String departmentName = values.get(7);
 						values.clear();
-						if (departmentName.equals(rdbtnOdense
-								.getText())) {
+						if (departmentName.equals(rdbtnOdense.getText())) {
 							model.removeRow(rows);
 							rows--;
 						}
@@ -244,15 +206,12 @@ public class ShowEmployeeUI {
 		});
 		contentPanel.add(rdbtnOdense);
 
-		JRadioButton rdbtnCopenhagen = new JRadioButton(
-				"Copenhagen");
+		JRadioButton rdbtnCopenhagen = new JRadioButton("Copenhagen");
 		rdbtnCopenhagen.setBounds(555, 11, 109, 23);
 		rdbtnCopenhagen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				department = departmentCtr
-						.findByName(rdbtnCopenhagen
-								.getText());
+				department = departmentCtr.findByName(rdbtnCopenhagen.getText());
 				int departmentId = department.getId();
 
 				if (rdbtnCopenhagen.isSelected()) {
@@ -260,29 +219,22 @@ public class ShowEmployeeUI {
 					functionalityCtr.addClick();
 
 					if (functionalityCtr.getClicks() <= 1) {
-						model.getDataVector()
-								.removeAllElements();
+						model.getDataVector().removeAllElements();
 						model.fireTableDataChanged();
 					}
 
-					for (Object[] object : employeeCtr
-							.addAllEmployeesForDepartment(departmentId)) {
+					for (Object[] object : employeeCtr.addAllEmployeesForDepartment(departmentId)) {
 						model.addRow(object);
 					}
 				} else {
-					for (int rows = 0; rows < table
-							.getRowCount(); rows++) {
+					for (int rows = 0; rows < table.getRowCount(); rows++) {
 						ArrayList<String> values = new ArrayList<>();
-						for (int columns = 0; columns < table
-								.getColumnCount(); columns++) {
-							values.add(table.getValueAt(rows,
-									columns).toString());
+						for (int columns = 0; columns < table.getColumnCount(); columns++) {
+							values.add(table.getValueAt(rows, columns).toString());
 						}
 						String departmentName = values.get(7);
 						values.clear();
-						if (departmentName
-								.equals(rdbtnCopenhagen
-										.getText())) {
+						if (departmentName.equals(rdbtnCopenhagen.getText())) {
 							model.removeRow(rows);
 							rows--;
 						}
@@ -318,12 +270,9 @@ public class ShowEmployeeUI {
 				}
 
 				if (flag) {
-					model.addRow(employeeCtr
-							.addEmployeeById(Integer
-									.parseInt(search)));
+					model.addRow(employeeCtr.addEmployeeById(Integer.parseInt(search)));
 				} else {
-					model.addRow(employeeCtr
-							.addEmployeeByName(search));
+					model.addRow(employeeCtr.addEmployeeByName(search));
 				}
 
 				txtSearch.setText("");
@@ -338,20 +287,15 @@ public class ShowEmployeeUI {
 				for (int i : vals) {
 					ArrayList<String> values = new ArrayList<>();
 					for (int x = 0; x < table.getColumnCount(); x++) {
-						values.add(table.getValueAt(i, x)
-								.toString());
+						values.add(table.getValueAt(i, x).toString());
 
 					}
-					employeeCtr.updateEmployee(
-							Integer.parseInt(values.get(0)),
-							values.get(1), values.get(2),
-							values.get(3), values.get(4),
-							values.get(5), values.get(6),
-							values.get(7));
+					employeeCtr.updateEmployee(Integer.parseInt(values.get(0)), values.get(1), values.get(2),
+							values.get(3), values.get(4), values.get(5), values.get(6), values.get(7));
 				}
 			}
 		});
-		btnUpdate.setBounds(639, 380, 89, 23);
+		btnUpdate.setBounds(639 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnUpdate);
 
 		JButton btnDelete = new JButton("Delete");
@@ -363,12 +307,7 @@ public class ShowEmployeeUI {
 				for (int i : vals) {
 
 					try {
-						Employee employee = employeeCtr
-								.findById(Integer
-										.parseInt(table
-												.getValueAt(i,
-														0)
-												.toString()));
+						Employee employee = employeeCtr.findById(Integer.parseInt(table.getValueAt(i, 0).toString()));
 						int id = employee.getId();
 						employeeCtr.deleteEmployee(id);
 					} catch (Exception e1) {
@@ -381,7 +320,7 @@ public class ShowEmployeeUI {
 			}
 
 		});
-		btnDelete.setBounds(739, 380, 89, 23);
+		btnDelete.setBounds(739 + functionalityCtr.getAddWidth(), 355, 89, 23);
 		contentPanel.add(btnDelete);
 
 		contentPanel.invalidate();

@@ -112,7 +112,7 @@ public class CtrSale {
 			DBPartSale dbPartSale = new DBPartSale();
 			dbPartSale.insertPartSale(partSale);
 			if (funcionalityCtr.isProduct(barcode)) {
-				productCtr.recalculateProAmount(barcode, amount, departmentId);
+				productCtr.saleProductCalculation(barcode, amount, departmentId);
 			}
 			DBConnection.commitTransaction();
 		} catch (Exception e) {
